@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 export default function PublicLayout({
   children,
@@ -16,17 +17,17 @@ export default function PublicLayout({
             </span>
           </div>
           <nav className="hidden md:flex gap-6 text-sm font-medium">
-            <a href="/" className="transition-colors hover:text-teal-400">Početna</a>
-            <a href="/apartmani" className="transition-colors hover:text-teal-400">Apartmani</a>
-            <a href="/o-sibeniku" className="transition-colors hover:text-teal-400">O Šibeniku</a>
-            <a href="/kontakt" className="transition-colors hover:text-teal-400">Kontakt</a>
+            <Link href="/" className="transition-colors hover:text-teal-400">Početna</Link>
+            <Link href="/apartmani" className="transition-colors hover:text-teal-400">Apartmani</Link>
+            <Link href="/o-sibeniku" className="transition-colors hover:text-teal-400">O Šibeniku</Link>
+            <Link href="/kontakt" className="transition-colors hover:text-teal-400">Kontakt</Link>
           </nav>
-          <a
+          <Link
             href="/kontakt"
             className="rounded-full bg-teal-500 px-4 py-2 text-xs font-semibold text-stone-950 hover:bg-teal-400 transition-all duration-300"
           >
             Rezerviraj
-          </a>
+          </Link>
         </div>
       </header>
 
