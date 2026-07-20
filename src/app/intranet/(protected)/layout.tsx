@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { IntranetShell } from "@/components/intranet/layout/IntranetShell";
+import { CompanyProvider } from "@/lib/company/company-context";
 
 // Auth-guard layout za cijelu (intranet) route grupu (sve unutar /intranet osim javnih auth ruta).
 // - Prikazuje loading spinner dok se inicijalizira auth state.
@@ -27,7 +28,7 @@ export default function ProtectedIntranetLayout({
   // Loading state — prikaži dok se provjerava auth
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-dvh items-center justify-center bg-background px-6">
         <div className="flex flex-col items-center gap-4">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary" />
           <p className="text-sm text-muted-foreground">Učitavanje...</p>
@@ -41,5 +42,10 @@ export default function ProtectedIntranetLayout({
     return null;
   }
 
-  return <IntranetShell>{children}</IntranetShell>;
+  // CompanyProvider je unutar auth guarda jer dohvat firmi traži JWT
+  return (
+    <CompanyProvider>
+      <IntranetShell>{children}</IntranetShell>
+    </CompanyProvider>
+  );
 }

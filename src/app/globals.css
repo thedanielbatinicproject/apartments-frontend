@@ -117,14 +117,209 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ============================================================
+   MOBILE-FIRST TEMELJI
+   Aplikacija je primarno dizajnirana za mobitele. Sve ispod
+   je osnova koja rješava klasične mobilne probleme (iOS zoom
+   na input focus, 100vh bug, notch/home indicator, tap highlight).
+   ============================================================ */
+
+/* --- DODATNI MOBILNI BREAKPOINT ---
+   Tailwind po defaultu počinje na sm (640px), što je već tablet.
+   xs (480px) hvata razliku između malog (iPhone SE, 375px) i
+   velikog telefona (iPhone Pro Max, 430px).
+
+   NAPOMENA: koristi se obični @theme, ne @theme inline — kod
+   `inline` varijante Tailwind ne emitira CSS varijablu u :root. */
+@theme {
+  --breakpoint-xs: 30rem;
+}
+
+:root {
+  /* Visina mobilne bottom navigacije. Definirano kao obična CSS
+     varijabla (ne u @theme inline) jer je čitamo preko var() u
+     .pb-nav-offset utilityju ispod. */
+  --bottom-nav-height: 3.5rem;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    @apply font-sans bg-background;
+
+    /* Sprječava horizontalni scroll na uskim ekranima.
+       VAŽNO: `clip`, a NE `hidden`. `overflow-x: hidden` pretvara
+       element u scroll kontejner, što lomi `position: sticky`
+       (a naši headeri su sticky). `clip` reže višak bez toga. */
+    overflow-x: clip;
+
+    /* Glatko skrolanje na sidrišta, ali poštuje prefers-reduced-motion */
+    scroll-behavior: smooth;
+
+    /* iOS: sprječava automatsko povećanje fonta u landscape orijentaciji */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground;
+
+    /* Uklanja sivi bljesak pri dodiru na Androidu/iOS-u */
+    -webkit-tap-highlight-color: transparent;
+
+    /* Isti razlog kao gore — clip, ne hidden.
+       Napomena: pull-to-refresh namjerno NIJE onemogućen
+       (overscroll-behavior ostaje default). Bijela pruga pri
+       rubber-band bounceu riješena je bg-background na <html>. */
+    overflow-x: clip;
+
+    /* Bolje renderiranje fonta na retina mobilnim ekranima */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  html {
-    @apply font-sans;
+
+  /* --- iOS ZOOM FIX ---
+     Safari na iOS-u automatski zumira stranicu kad korisnik fokusira
+     input čiji je font manji od 16px. Zato SVI form elementi na
+     mobitelu imaju minimalno 16px, a na desktopu se vraćaju na 14px. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  @media (min-width: 640px) {
+    input,
+    select,
+    textarea {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Interaktivni elementi ne smiju imati text-selection na dodir-drag */
+  button,
+  [role="button"],
+  a {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Poštuj korisnikovu postavku smanjene animacije */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* --- SAFE AREA (notch, home indicator, zaobljeni rubovi) --- */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .px-safe {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+  /* Kombinira vlastiti padding sa safe-area (za bottom nav) */
+  .pb-safe-nav {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
+  }
+  /* Razmak na dnu sadržaja da ga fiksni bottom nav ne prekrije.
+     NAPOMENA: h-dvh / min-h-dvh ne definiramo ovdje — Tailwind v4
+     ih već ima ugrađene, pa bi vlastita definicija samo stvarala
+     sukob u kaskadi. */
+  .pb-nav-offset {
+    padding-bottom: calc(
+      var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 1.5rem
+    );
+  }
+
+  /* --- VODORAVNI GUTTER ---
+     Koristi se umjesto kombinacije `px-4 sm:px-6 px-safe`.
+
+     ZAŠTO POSTOJI: `px-safe` postavlja padding-left na
+     env(safe-area-inset-left), a to je na desktopu i na većini
+     Androida 0px. Budući da je definiran u @layer utilities
+     NAKON Tailwindovih klasa, u istom sloju pobjeđuje i PONIŠTI
+     `px-4`/`sm:px-6` ako stoje na istom elementu — sadržaj se
+     zalijepi uz rub.
+
+     max() rješava oboje: zadaje donju granicu razmaka, a na
+     uređajima sa zaobljenim rubovima/notchom se automatski
+     poveća koliko safe-area traži. */
+  .px-gutter {
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
+  }
+
+  @media (min-width: 640px) {
+    .px-gutter {
+      padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+      padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .px-gutter {
+      padding-left: max(2rem, env(safe-area-inset-left, 0px));
+      padding-right: max(2rem, env(safe-area-inset-right, 0px));
+    }
+  }
+
+  /* --- TAP TARGET ---
+     Osigurava minimalno 44x44px dodirnu površinu bez mijenjanja
+     vizualne veličine elementa. */
+  .tap-target {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
+  /* --- SCROLL BEZ TRAKE (za horizontalne liste na mobitelu) --- */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Momentum scroll na iOS-u unutar kontejnera */
+  .scroll-touch {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* --- TEKST KOJI SE NE LOMI RUŽNO ---
+     Sprječava da duge riječi (emailovi, URL-ovi) razvuku layout. */
+  .break-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* --- GLASSMORPHIC POVRŠINA (mediteranski stil iz AGENTS.md) --- */
+  .glass {
+    background-color: color-mix(in oklch, var(--card) 70%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  .glass-dark {
+    background-color: oklch(0.18 0.02 240 / 0.72);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
 }

@@ -4,6 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { resetPassword } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/types";
+import {
+  AuthInput,
+  AuthSubmitButton,
+  AuthTextButton,
+  AuthError,
+  AuthHeading,
+} from "./AuthFormControls";
 
 interface ResetPasswordFormProps {
   token: string;
@@ -49,19 +56,13 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   if (!token) {
     return (
       <div className="w-full space-y-4">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Nevažeći link
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Ovaj reset link nije ispravan. Molimo zatražite novi.
-        </p>
-        <button
-          type="button"
-          onClick={() => router.push("/intranet/login")}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
-        >
+        <AuthHeading
+          title="Nevažeći link"
+          subtitle="Ovaj reset link nije ispravan. Molimo zatražite novi."
+        />
+        <AuthTextButton onClick={() => router.push("/intranet/login")}>
           ← Natrag na prijavu
-        </button>
+        </AuthTextButton>
       </div>
     );
   }
@@ -69,85 +70,62 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   if (done) {
     return (
       <div className="w-full space-y-6">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Lozinka promijenjena!
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Vaša lozinka je uspješno promijenjena. Sada se možete prijaviti.
-          </p>
-        </div>
-        <button
+        <AuthHeading
+          title="Lozinka promijenjena!"
+          subtitle="Vaša lozinka je uspješno promijenjena. Sada se možete prijaviti."
+        />
+        <AuthSubmitButton
           type="button"
           onClick={() => router.push("/intranet/login")}
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-all"
         >
           Prijavi se
-        </button>
+        </AuthSubmitButton>
       </div>
     );
   }
 
   return (
     <div className="w-full space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Nova lozinka
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Odaberite novu lozinku za vaš račun.
-        </p>
-      </div>
+      <AuthHeading
+        title="Nova lozinka"
+        subtitle="Odaberite novu lozinku za vaš račun."
+      />
 
-      {error && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      {error && <AuthError message={error} />}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <label htmlFor="new-password" className="text-sm font-medium text-foreground">
-            Nova lozinka
-          </label>
-          <input
-            id="new-password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            disabled={isLoading}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Najmanje 8 znakova"
-            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label htmlFor="confirm-password" className="text-sm font-medium text-foreground">
-            Potvrdi novu lozinku
-          </label>
-          <input
-            id="confirm-password"
-            type="password"
-            autoComplete="new-password"
-            required
-            disabled={isLoading}
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            placeholder="Ponovi lozinku"
-            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-          />
-        </div>
-
-        <button
-          type="submit"
+        <AuthInput
+          id="new-password"
+          label="Nova lozinka"
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={8}
           disabled={isLoading}
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60 transition-all"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Najmanje 8 znakova"
+        />
+
+        <AuthInput
+          id="confirm-password"
+          label="Potvrdi novu lozinku"
+          type="password"
+          autoComplete="new-password"
+          required
+          disabled={isLoading}
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          placeholder="Ponovi lozinku"
+        />
+
+        <AuthSubmitButton
+          type="submit"
+          loading={isLoading}
+          loadingText="Sprema se..."
         >
-          {isLoading ? "Sprema se..." : "Postavi novu lozinku"}
-        </button>
+          Postavi novu lozinku
+        </AuthSubmitButton>
       </form>
     </div>
   );

@@ -40,6 +40,12 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   loginGoogle: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
+  /**
+   * Ponovno dohvaća /me i osvježava globalni user objekt.
+   * Koristi se npr. nakon promjene solar pretplate, da se
+   * sidebar/header i ostali potrošači odmah usklade.
+   */
+  refreshUser: () => Promise<void>;
 }
 
 // --- Context kreacija ---
@@ -128,8 +134,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  // --- Osvježavanje trenutnog korisnika ---
+  const refreshUser = useCallback(async () => {
+    const me = await getMe();
+    setUser(me);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, loginGoogle, logout }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, loginGoogle, logout, refreshUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

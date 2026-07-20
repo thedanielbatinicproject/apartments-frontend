@@ -95,7 +95,7 @@ Postavlja novu lozinku koristeći token iz reset emaila.
 ## 2. Admin Users — `/api/admin/users` (JWT, klasa je **SUPERADMIN**-only osim gdje je naznačeno)
 
 ### `GET /api/admin/users` — SUPERADMIN
-Lista svih admin korisnika.
+Lista svih admin korisnika. Obrisani (soft delete) se **ne** vraćaju.
 
 - Response `data`: `AdminUserResponse[]` — `{ id, email, fullName, role: "ADMIN"|"SUPERADMIN", authProvider: "LOCAL"|"GOOGLE", enabled: boolean, solarReportSubscribed: boolean }`
 
@@ -116,13 +116,61 @@ Uključi/isključi primanje tjednih solar izvještaja mailom.
 - Body (`InviteRequest`): `{ "email": string (required, valid email), "role": "ADMIN"|"SUPERADMIN" (required) }`
 - Response `data`: `null`, `message`: "Pozivnica poslana"
 
+| Slučaj | Odgovor |
+|---|---|
+| Aktivan korisnik s tim emailom već postoji | `409` — "Korisnik s ovim emailom već postoji" |
+| Email pripada **obrisanom** računu | `409` — "Ovaj email pripada obrisanom računu i ne može se ponovno koristiti" |
+
+Ista provjera obrisanog emaila vrijedi i pri `POST /api/auth/invite/accept` — pokriva pozivnice izdane prije nego što je račun s tom adresom obrisan.
+
 ### `PATCH /api/admin/users/{id}/disable` — SUPERADMIN
 - Path: `id` (Long)
 - Response `data`: `null`, `message`: "Korisnik onemogućen"
+- Poništava sve refresh tokene korisnika (prisilna odjava pri sljedećem refreshu)
+
+| Slučaj | Odgovor |
+|---|---|
+| `id` je trenutno prijavljeni korisnik | `409` — "Ne možete onemogućiti vlastiti račun" |
+| `id` je zadnji aktivni SUPERADMIN | `409` — "Sustav mora imati barem jednog aktivnog Super Admina" |
+| Korisnik ne postoji (ili je obrisan) | `404` |
 
 ### `PATCH /api/admin/users/{id}/enable` — SUPERADMIN
 - Path: `id` (Long)
 - Response `data`: `null`, `message`: "Korisnik omogućen"
+- Nema ograničenja (omogućavanje ne može zaključati sustav)
+
+### `PATCH /api/admin/users/{id}/role` — SUPERADMIN
+Mijenja rolu postojećeg admina.
+
+- Path: `id` (Long)
+- Body (`ChangeRoleRequest`): `{ "role": "ADMIN"|"SUPERADMIN" (required) }`
+- Response `data`: **`AdminUserResponse`** (ažurirani korisnik), `message`: "Rola promijenjena" — frontend može osvježiti redak bez dodatnog `GET`-a
+- Poništava sve refresh tokene korisnika. `JwtAuthenticationFilter` čita rolu iz JWT claima, pa stari access token nosi staru rolu do isteka (15 min); nakon toga se korisnik ne može refreshati i mora na login, gdje dobiva token s novom rolom.
+
+| Slučaj | Odgovor |
+|---|---|
+| `id` je trenutno prijavljeni korisnik | `409` — "Ne možete mijenjati vlastitu rolu" |
+| Degradiranje zadnjeg aktivnog SUPERADMINA | `409` — "Sustav mora imati barem jednog aktivnog Super Admina" |
+| `role` nije `ADMIN` ni `SUPERADMIN` | `400` |
+| Korisnik ne postoji (ili je obrisan) | `404` |
+
+### `DELETE /api/admin/users/{id}` — SUPERADMIN
+Briše admin račun (**soft delete**).
+
+- Path: `id` (Long)
+- Body: nema
+- Response `data`: `null`, `message`: "Korisnik obrisan"
+- Poništava sve refresh tokene korisnika
+
+Implementirano kao soft delete (`deleted_at`), jer `admin_invites.invited_by_id` je `NOT NULL`, a `invoices` / `relay_commands` / `guest_stay_records` drže FK reference na admina — tvrdi `DELETE` bi puknuo na FK constraintu ili uništio revizijski trag. Korisnik nestaje iz `GET /api/admin/users`, ne može se prijaviti niti primati mailove, ali reference ostaju valjane.
+
+> **Email ostaje zauzet.** Stupac `email` ima unique constraint, pa se adresa obrisanog računa **ne može ponovno koristiti** — `POST /invite` i prihvaćanje pozivnice na tu adresu vraćaju `409` "Ovaj email pripada obrisanom računu i ne može se ponovno koristiti".
+
+| Slučaj | Odgovor |
+|---|---|
+| `id` je trenutno prijavljeni korisnik | `409` — "Ne možete obrisati vlastiti račun" |
+| `id` je zadnji aktivni SUPERADMIN | `409` — "Sustav mora imati barem jednog aktivnog Super Admina" |
+| Korisnik ne postoji (ili je već obrisan) | `404` |
 
 ---
 
@@ -156,10 +204,10 @@ Detalj jednog apartmana.
 - Query: `lang` (optional)
 - Response `data`: `ApartmentResponse`
 
-**`ApartmentResponse`** (javna verzija, `includeAdminFields=false` — polja `airbnbIcalUrl`/`bookingIcalUrl` su `null`):
+**`ApartmentResponse`** (javna verzija, `includeAdminFields=false` — polja `companyId`/`airbnbIcalUrl`/`bookingIcalUrl` su `null`):
 ```
 id, internalCode, roomCount, capacity, latitude, longitude, amenities: string[],
-active, sortOrder, airbnbIcalUrl, bookingIcalUrl,
+active, sortOrder, companyId, airbnbIcalUrl, bookingIcalUrl,
 name, description,                    // razriješeno za traženi ?lang=
 translationFallbackUsed: boolean,     // true ako traženi jezik ne postoji pa je vraćen fallback
 availableLanguages: string[],         // koji jezici stvarno postoje u bazi
@@ -170,6 +218,11 @@ coverImageUrl, images: ApartmentImageResponse[]
 ---
 
 ## 5. Admin Apartments — `/api/admin/apartments` (JWT, ADMIN/SUPERADMIN)
+
+### `GET /api/admin/apartments`
+Lista SVIH apartmana (uključujući skrivene/neaktivne, za razliku od javne rute), s admin poljima (`companyId`, iCal URL-ovi) popunjenima.
+
+- Response `data`: `ApartmentResponse[]`
 
 ### `POST /api/admin/apartments`
 Kreira novi apartman.
@@ -247,17 +300,67 @@ Kreira ili ažurira prijevod za dani jezik (upsert — ručno upravljanje, NEMA 
 Popunjeni periodi za apartman (za prikaz kalendara dostupnosti na javnoj stranici).
 
 - Path: `apartmentId` (Long)
-- Response `data`: `BookedPeriodResponse[]` — `{ startDate: LocalDate, endDate: LocalDate, source: string }` (`source` je naziv izvora, npr. `"AIRBNB"`, `"BOOKING"`, `"MANUAL"` — vidi `BookedPeriodSource` enum)
+- Response `data`: `BookedPeriodResponse[]`
+
+```jsonc
+{
+  "startDate": "2026-08-01",
+  "endDate":   "2026-08-05",   // checkout, EKSKLUZIVAN
+  "source":    "MERGED",        // "AIRBNB" | "BOOKING" | "MANUAL" | "MERGED"
+  "sources":   ["AIRBNB", "BOOKING"],
+  "periodIds": [12, 47],
+  "merged":    true,
+  "mismatch":  false
+}
+```
+
+**Preklapajući periodi spajaju se u uniju.** Isti termin rezerviran preko Airbnba i zrcaljen kao blokada na Bookingu vraća se kao **jedan** period. Vraćeni periodi se međusobno **ne preklapaju**, pa ih frontend može crtati redom.
+
+| Polje | Značenje |
+|---|---|
+| `source` | Zadržano radi kompatibilnosti. Za nespojeni period naziv izvora, za spojeni `"MERGED"`. |
+| `sources` | Svi izvori koji su doprinijeli periodu. Uvijek popunjeno, i kad je samo jedan. |
+| `periodIds` | ID-evi pojedinačnih zapisa iza ovog perioda. Proslijediti u `DELETE /api/admin/calendar/periods/{periodId}` — spojeni period sam po sebi nema identitet pa se briše po pojedinačnom zapisu. |
+| `merged` | Je li period nastao spajanjem više zapisa. |
+| `mismatch` | `true` samo ako spojeni zapisi **nisu** imali identične datume — potencijalni dvostruki booking. Identični datumi iz dva izvora su normalno zrcaljenje i daju `false`. |
+
+> `endDate` je checkout i tretira se kao ekskluzivan: checkout jednog i checkin drugog gosta **istog dana nisu** preklapanje i ostaju zasebni periodi.
+>
+> Spajanje se radi pri čitanju, ne u bazi — u bazi se čuva provenijencija (redak po izvoru) jer je sync po izvoru, pa bi brisanje "duplikata" pri spremanju sljedeći sync samo vratio.
 
 ### `POST /api/admin/calendar/{apartmentId}/sync` — JWT (ADMIN/SUPERADMIN)
-Ručno pokreće iCal sync (Airbnb/Booking) za apartman. (Sync se inače pokreće i automatski schedulerom.)
+Ručno pokreće iCal sync (Airbnb/Booking) za apartman. Sync se pokreće i automatski schedulerom.
 
 - Path: `apartmentId` (Long) → `data: null`
+
+**Semantika sync-a (upsert, ne zamjena):** Airbnb/Booking feedovi sadrže samo rezervacije od danas nadalje, pa se povijest **ne briše**. Zapisi se matchaju po `external_uid`, postojeći se ažuriraju, novi dodaju. Briše se samo ono što je nestalo iz feeda **i** još je aktualno (checkout danas ili kasnije) — to je stvarno otkazana rezervacija. Duplikati istog UID-a unutar feeda se dedupliciraju.
+
+**Interval automatskog sync-a** je konfigurabilan preko `app.calendar.sync-interval-ms` (ili env `ICAL_SYNC_INTERVAL_MS`), **default 10 minuta**. Mjeri se od početka prethodnog izvođenja; prvi sync ide odmah po pokretanju aplikacije.
+
+### `DELETE /api/admin/calendar/periods/{periodId}` — JWT (ADMIN/SUPERADMIN)
+Briše pojedinačni zauzeti period.
+
+- Path: `periodId` (Long) — iz `BookedPeriodResponse.periodIds`
+- Response `data`: `null`
+- `404` ako period ne postoji
+
+> **Brisanje nije uvijek trajno.** Periodi iz Airbnb/Booking feeda koji su još aktualni (checkout danas ili kasnije) i dalje su u feedu, pa ih sljedeći sync (default svakih 10 min) vraća — upsert ih prepozna po `external_uid`. Trajno se brišu samo **prošli** periodi (feed ih više ne sadrži) i `MANUAL` unosi.
+>
+> `message` u odgovoru razlikuje ta dva slučaja: `"Period obrisan"` odnosno `"Period obrisan, ali dolazi iz iCal feeda pa će se vratiti pri sljedećoj sinkronizaciji"`.
 
 ### `GET /api/admin/calendar/sync-status` — JWT (ADMIN/SUPERADMIN)
 Status zadnjeg sync-a za sve apartmane (za admin dashboard — je li zadnji import uspio, kada, koliko perioda importirano).
 
 - Response `data`: `SyncStatusResponse[]` — `{ apartmentId, apartmentInternalCode, source, lastSyncAt: Instant, lastSyncSuccess: boolean, lastErrorMessage, importedCount: Integer }`
+
+**`lastErrorMessage` nosi i upozorenja, ne samo greške.** Kad sync uspije ali je nešto sumnjivo, `lastSyncSuccess` ostaje `true`, a poruka dobiva prefiks `UPOZORENJE:`. Više upozorenja se spaja s ` | `.
+
+| Upozorenje | Kada |
+|---|---|
+| `UPOZORENJE: preklapajuće rezervacije: ...` | Dvije rezervacije se preklapaju **unutar istog** feeda |
+| `UPOZORENJE: preklapanje s drugim izvorom: ...` | Neidentično preklapanje **između** Airbnba i Bookinga — upisuje se u status **oba** izvora |
+
+Neidentično preklapanje između izvora **dodatno šalje email** svim aktivnim adminima (mogući dvostruki booking). Identična preklapanja ne generiraju mail — to je normalno zrcaljenje rezervacije, pa nema spama.
 
 ---
 
@@ -339,6 +442,8 @@ Pretraga/filter svih evidencija gostiju.
 - Query (svi optional): `apartmentId` (Long), `status` (enum `GuestStayStatus`), `from` (LocalDate, ISO `YYYY-MM-DD`), `to` (LocalDate, ISO)
 - Response `data`: `AdminGuestRecordResponse[]`
 
+Poziv **bez ijednog parametra** je podržan i vraća sve zapise, sortirano po `createdAt DESC`. **Nema limita ni paginacije** — vraća se cijela tablica.
+
 ### `GET /api/admin/checkin/records/{id}`
 Detalj jedne evidencije.
 
@@ -348,8 +453,16 @@ Detalj jedne evidencije.
 Admin ručno ispravlja podatke (npr. nakon crosscheck-a s papirnatim dokumentom).
 
 - Path: `id` (Long)
-- Body (`AdminCorrectionRequest`, sva polja opcionalna — šalju se samo ona koja se mijenjaju): `{ fullName, dateOfBirth, placeOfBirth, placeOfResidence, documentType, documentNumber, nationality, sex, documentExpiryDate }`
+- Body (`AdminCorrectionRequest`, sva polja opcionalna — šalju se samo ona koja se mijenjaju): `{ fullName, dateOfBirth, placeOfBirth, placeOfResidence, documentType, documentNumber, nationality, sex, documentExpiryDate, apartmentId, arrivalDate, departureDate }`
 - Response `data`: `AdminGuestRecordResponse`
+- `409` ako je zapis očišćen (`personalDataPurgedAt` postavljen) a šalje se `documentNumber` ili `documentExpiryDate`
+- `400` "Datum odlaska mora biti nakon datuma dolaska"
+
+`arrivalDate`/`departureDate` su ovdje jedini način da se datumi boravka postave za `ADMIN_PAPER_SCAN` zapise — papirnati obrazac ih ne sadrži.
+
+> Validira se **konačno stanje**, ne samo poslana polja. Ako se pošalje samo `departureDate`, uspoređuje se s već spremljenim `arrivalDate` — inače bi se kroz dva odvojena poziva dao složiti nevaljan boravak.
+
+`originalExtraction` se ispravcima **nikad ne mijenja** — ostaje snimka onoga što je OCR pročitao.
 
 ### `POST /api/admin/checkin/records/{id}/mark-reviewed`
 Admin označava evidenciju kao pregledanu (ručna verifikacija). Sprema tko je pregledao (iz JWT-a) i kada.
@@ -358,14 +471,50 @@ Admin označava evidenciju kao pregledanu (ručna verifikacija). Sprema tko je p
 - Response `data`: `null`
 
 ### `DELETE /api/admin/checkin/records/{id}`
-- Path: `id` (Long) → `data: null`
+**Ne briše zapis** — uklanja samo osjetljive podatke (GDPR). Evidencija boravka ostaje.
+
+- Path: `id` (Long)
+- Response `data`: `null`, `message`: "Osjetljivi podaci uklonjeni"
+- Idempotentno: ponovni poziv nad već očišćenim zapisom prolazi bez promjene
+
+| Trajno uklonjeno | Ostaje |
+|---|---|
+| `documentNumber` | `fullName`, `dateOfBirth`, `placeOfBirth`, `placeOfResidence` |
+| `documentExpiryDate` | `documentType`, `nationality`, `sex` |
+| slike dokumenata — **i fizičke datoteke i DB retci** | `arrivalDate`, `departureDate`, `apartmentId` |
+| svi `ocr_attempts` (njihov `extractedJson` sadrži sirovi MRZ s brojem dokumenta) | `status`, `submissionMethod`, `reviewedAt` |
+
+Nakon poziva `AdminGuestRecordResponse.personalDataPurgedAt` je postavljen. **Frontend to mora razlikovati od neuspjelog OCR-a** — u oba slučaja je `documentNumber` prazan, ali kod purgea podaci ne postoje i ne mogu se vratiti, dok kod neuspjelog OCR-a admin još može unijeti ispravke.
+
+> `PUT /api/admin/checkin/records/{id}` na očišćenom zapisu vraća `409` ako se šalje `documentNumber` ili `documentExpiryDate` — inače bi se GDPR brisanje moglo poništiti jednim pozivom. Ostala polja (npr. ispravak imena) i dalje prolaze.
 
 ### `POST /api/admin/checkin/paper-scan` — multipart
-**Skeleton ruta — nije potpuno implementirana (namjerno, OpenCV OCR dio ostaje za kasnije).** Zamišljena za slučaj kad gost popuni papirnati formular na recepciji, admin ga skenira/fotografira i sustav bi trebao OCR-ati taj formular. Trenutno je endpoint prisutan i radi (prima upload), ali obrada slike papirnatog formulara (OpenCV predobrada) nije dovršena — ovo je eksplicitno ostavljeno kao budući rad (najrizičniji dio, odgođen).
+Admin skenira/fotografira ispunjen papirnati obrazac. Obrazac ima **dva bloka za goste**, pa jedna slika može dati **do dva zapisa**.
 
-- Query/form: `apartmentId` (Long, required)
 - Content-Type: `multipart/form-data`, polje `image` (required)
-- Response `data`: `AdminGuestRecordResponse`
+- Query/form: `apartmentId` (Long, **opcionalno**) — override; ako izostane, čita se oznaka s papira (`EN-1` → apartman 1)
+- Response `data`: **`PaperScanResponse`**
+
+```jsonc
+{
+  "records": [ /* AdminGuestRecordResponse, jedan po popunjenom bloku (0-2) */ ],
+  "blocksDetected": 2,          // uvijek 2 - obrazac ima toliko blokova
+  "blocksFilled": 1,            // koliko ih je stvarno popunjeno
+  "detectedFormIdentifier": "EN-1",
+  "detectedApartmentId": 1,
+  "identifierReadable": true
+}
+```
+
+> **`records` je niz, ne jedan objekt.** Kad su na papiru popunjena oba bloka, vraćaju se dva zapisa — oba vežu **istu** sliku obrasca u `documentImageUrls`.
+
+| Slučaj | Odgovor |
+|---|---|
+| Obrazac se ne može poravnati (markeri nisu nađeni) | `422` — poruka iz kalibracije |
+| Oznaka apartmana nije pročitana, a `apartmentId` nije poslan | `422` — "Oznaka apartmana nije prepoznata s obrasca" |
+| Oznaka pročitana, ali taj apartman ne postoji | `422` — "Apartman iz oznake na obrascu ne postoji: {id}" |
+
+`arrivalDate`/`departureDate` ostaju **`null`** — fizički obrazac ih nema. Admin ih upisuje kroz `PUT .../records/{id}`.
 
 **`AdminGuestRecordResponse`**:
 ```
@@ -377,7 +526,30 @@ status: GuestStayStatus, submissionMethod: "OCR_SELF"|"MANUAL_FORM"|"ADMIN_PAPER
 ocrConfidenceScore: Double, unreliableExtraction: boolean, needsManualReview: boolean
 reviewedAt: Instant
 documentImageUrls: string[]   // URL-ovi na /api/admin/files/... (GDPR-zaštićeno, treba JWT za pristup slikama)
+personalDataPurgedAt: Instant | null
+originalExtraction: object | null
 ```
+
+**`originalExtraction`** — nepromjenjiva snimka onoga što je OCR pročitao pri **prvom** čitanju:
+
+```jsonc
+"originalExtraction": {
+  "fullName": "MARKO MARIC",
+  "dateOfBirth": "1985-03-12",
+  "placeOfBirth": "SPLIT",
+  "placeOfResidence": "SPLIT, CROATIA",
+  "documentType": "ID_CARD",
+  "documentNumber": "112233445",
+  "nationality": "HRV",
+  "sex": "M",
+  "documentExpiryDate": "2030-01-01"
+}
+```
+
+- popunjeno samo za `OCR_SELF` i `ADMIN_PAPER_SCAN`; za `MANUAL_FORM` je `null`
+- "prvo čitanje pobjeđuje" — ponovljeni OCR pokušaj ne prepisuje snimku
+- ispravci (`PUT`) je nikad ne mijenjaju
+- **`null` i za purgirane zapise** — snimka sadrži broj dokumenta pa se briše zajedno s ostalim osjetljivim podacima
 
 **Enumi:**
 - `GuestStayStatus`: `PENDING, PROCESSING, VERIFIED, FAILED, MANUAL_REVIEW, EXPIRED`
@@ -429,6 +601,16 @@ Ažurira kataloge.
 
 Sustav računa/predračuna/ponuda. Svaka firma (`companyId`) ima svoj brojčani niz dokumenata po godini.
 
+**Tok je jednokoračni:** spremi jednom → dokument je gotov s brojem i PDF-om → po potrebi uredi ili obriši. Statusi:
+
+| Status | Nastaje | `editable` | Može se brisati |
+|---|---|---|---|
+| `ISSUED` | `POST` (default) | `true` | da |
+| `DRAFT` | `POST ?issue=false` | `true` | da |
+| `CANCELLED` | `POST /cancel` | `false` | da |
+
+**PDV se nigdje ne obračunava ni prikazuje.** Firma je paušalni obrt izvan sustava PDV-a (`Company.taxRate` — komentar u entitetu: `null = paušalni obrt, nema PDV-a`). `InvoiceResponse` nema porezno polje: iznosi su `netAmount` (zbroj stavki), `discountAmount` i `totalDue`. PDF ispisuje UKUPNO / POPUST / ZA PLATITI i, ako je popunjena, napomenu `vatExemptNoteHr`.
+
 ### ADMIN rute (JWT, ADMIN/SUPERADMIN)
 
 #### `GET /api/admin/invoices/{companyId}`
@@ -445,9 +627,10 @@ Puni detalj dokumenta.
 - Response `data`: `InvoiceResponse` (vidi ispod)
 
 #### `POST /api/admin/invoices/{companyId}`
-Kreira novi dokument (račun/predračun/ponuda) kao `DRAFT`.
+Kreira dokument i **odmah ga izdaje** — dodjeljuje `documentNumber`, `year` i `uid`, radi snapshot podataka iznajmljivača i vraća `status: "ISSUED"`. Nema zasebnog `/issue` koraka.
 
 - Path: `companyId` (Long)
+- Query: `issue` (boolean, default `true`) — `?issue=false` ostavlja dokument u `DRAFT`-u bez broja
 - Body (`InvoiceRequest`):
 ```
 documentType: "INVOICE"|"PROFORMA"|"QUOTE" (required)
@@ -461,30 +644,42 @@ items: InvoiceItemRequest[] (required, min 1)
 discountAmount: BigDecimal
 paymentMethod: string
 customNotes: string
+guestRecordId: Long (optional)   // id iz AdminGuestRecordResponse, samo se sprema
 ```
 - `InvoiceItemRequest`: `{ unitDescription: string, roomNumber: Integer, serviceType: string, quantity: BigDecimal (required), unitPrice: BigDecimal (required) }`
-- Response `data`: `InvoiceResponse`
+- Response `data`: `InvoiceResponse` sa `status: "ISSUED"` i popunjenim `documentNumber`
+
+`guestRecordId` se samo sprema i vraća — bez validacije da zapis postoji i bez kaskadnog brisanja. Namjerno je običan `Long` bez FK-a, jer evidencija gosta može biti očišćena ili obrisana neovisno o računu.
 
 #### `PUT /api/admin/invoices/{companyId}/{invoiceId}`
-Ažurira dokument. **Samo dok je u statusu `DRAFT`** — polje `editable` u odgovoru govori frontend-u smije li prikazati edit formu (izdani/`ISSUED` dokumenti se ne mogu mijenjati, samo stornirati).
+Ažurira dokument. Radi na `DRAFT` **i** `ISSUED`; `CANCELLED` vraća `409`.
 
 - Path: `companyId`, `invoiceId` (Long); Body: `InvoiceRequest` (isti oblik kao create)
 - Response `data`: `InvoiceResponse`
+- `documentNumber`, `year` i `uid` se pri izmjeni **ne mijenjaju** — dokument zadržava svoj broj
+- `editable` u odgovoru je autoritet: `true` za `DRAFT` i `ISSUED`, `false` za `CANCELLED`
 
 #### `POST /api/admin/invoices/{companyId}/{invoiceId}/issue`
-Izdaje dokument (`DRAFT` → `ISSUED`) — dodjeljuje konačni `documentNumber`/`uid`, nakon toga postaje needit.
+Izdaje `DRAFT` (`DRAFT` → `ISSUED`). **Zadržano radi kompatibilnosti** — potrebno samo uz `?issue=false` pri kreiranju. Na već izdanom dokumentu vraća `409`.
 
 - Path: `companyId`, `invoiceId` (Long) → `data: InvoiceResponse`
 
 #### `POST /api/admin/invoices/{companyId}/{invoiceId}/cancel`
-Stornira izdani dokument (`ISSUED` → `CANCELLED`).
+Stornira dokument (`→ CANCELLED`). Storniran dokument se više ne može uređivati.
 
 - Path: `companyId`, `invoiceId` (Long) → `data: InvoiceResponse`
 
 #### `DELETE /api/admin/invoices/{companyId}/{invoiceId}`
-Briše dokument (vjerojatno dopušteno samo za `DRAFT`, provjeriti u servisu ako treba tvrdo pravilo na frontendu).
+Briše dokument — dopušteno i za `ISSUED`.
 
 - Path: `companyId`, `invoiceId` (Long) → `data: null`
+
+| Slučaj | Brojač | `message` |
+|---|---|---|
+| Obrisan **zadnji** dokument u nizu (firma + tip + godina) | smanjuje se za 1, broj se oslobađa | `"Dokument obrisan, broj oslobođen"` |
+| Obrisan dokument **iz sredine** niza | ne dira se, u nizu ostaje rupa | `"Dokument obrisan"` |
+
+> **Oslobođeni broj se ponovno dodjeljuje.** Ako je gost već dobio PDF s brojem `5/2026`, a taj dokument se obriše, sljedeći izdani dokument opet dobiva `5/2026` — dva različita dokumenta s istim brojem u optjecaju. Brisati samo dokumente koji nisu izašli iz kuće; za sve ostalo koristiti storno.
 
 #### `POST /api/admin/invoices/{companyId}/{invoiceId}/convert`
 Konvertira dokument u drugi tip (npr. ponuda → predračun → račun) — kreira novi dokument povezan s `convertedFromId`.
@@ -521,9 +716,10 @@ recipientName, recipientAddress, recipientOib, recipientCountry
 guestCount, childrenCount, checkinDate, checkoutDate
 
 items: InvoiceItemResponse[]   // { id, unitDescription, roomNumber, serviceType, quantity, unitPrice, lineTotal, sortOrder }
-netAmount, discountAmount, totalDue: BigDecimal
+netAmount, discountAmount, totalDue: BigDecimal   // nema poreznog polja - paušalni obrt, izvan sustava PDV-a
 currency, paymentMethod, customNotes
-editable: boolean   // true samo dok je status DRAFT
+editable: boolean       // true za DRAFT i ISSUED, false za CANCELLED
+guestRecordId: Long | null   // evidencija gosta iz koje je dokument popunjen
 ```
 
 **Enumi:** `InvoiceDocumentType`: `INVOICE, PROFORMA, QUOTE`. `InvoiceStatus`: `DRAFT, ISSUED, CANCELLED`.
@@ -688,6 +884,25 @@ POST   /api/solar/relay/ack             (X-Device-Secret header)
 ```
 
 Sve ostale rute zahtijevaju `Authorization: Bearer <accessToken>`, a podskup je dodatno ograničen na **SUPERADMIN** (admin users CRUD osim `/me`, admin invites).
+
+## Sažetak — SUPERADMIN rute za upravljanje adminima
+
+```
+GET    /api/admin/users
+POST   /api/admin/users/invite
+PATCH  /api/admin/users/{id}/disable
+PATCH  /api/admin/users/{id}/enable
+PATCH  /api/admin/users/{id}/role      body: { role: "ADMIN"|"SUPERADMIN" }
+DELETE /api/admin/users/{id}                                    (soft delete)
+```
+
+Zajednička pravila za `disable`, `role` i `delete`:
+
+- `409` ako je meta trenutno prijavljeni korisnik
+- `409` ako bi zahvat ostavio sustav bez ijednog aktivnog SUPERADMINA
+- svi poništavaju refresh tokene ciljanog korisnika
+
+> **Rola nije trenutna.** `JwtAuthenticationFilter` čita rolu iz JWT claima, ne iz baze, pa postojeći access token nosi staru rolu do isteka (`app.jwt.access-token-expiration-ms`, default 15 min). Nakon toga refresh ne prolazi i korisnik mora na login. Ako frontend treba trenutni efekt, mora sam odjaviti korisnika.
 
 ---
 

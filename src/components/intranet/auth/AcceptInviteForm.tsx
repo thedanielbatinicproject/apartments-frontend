@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import { acceptInvite } from "@/lib/api/auth";
 import { storeTokens } from "@/lib/auth/token-storage";
 import { ApiError } from "@/lib/api/types";
+import {
+  AuthInput,
+  AuthSubmitButton,
+  AuthTextButton,
+  AuthError,
+  AuthHeading,
+} from "./AuthFormControls";
 
 interface AcceptInviteFormProps {
   token: string;
@@ -53,100 +60,72 @@ export function AcceptInviteForm({ token }: AcceptInviteFormProps) {
   if (!token) {
     return (
       <div className="w-full space-y-4">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Nevažeći link
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Ovaj link za pozivnicu nije ispravan ili je istekao.
-        </p>
-        <button
-          type="button"
-          onClick={() => router.push("/intranet/login")}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
-        >
+        <AuthHeading
+          title="Nevažeći link"
+          subtitle="Ovaj link za pozivnicu nije ispravan ili je istekao."
+        />
+        <AuthTextButton onClick={() => router.push("/intranet/login")}>
           ← Natrag na prijavu
-        </button>
+        </AuthTextButton>
       </div>
     );
   }
 
   return (
     <div className="w-full space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Prihvati pozivnicu
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Postavite vaše ime i lozinku kako biste aktivirali admin račun.
-        </p>
-      </div>
+      <AuthHeading
+        title="Prihvati pozivnicu"
+        subtitle="Postavite vaše ime i lozinku kako biste aktivirali admin račun."
+      />
 
-      {error && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      {error && <AuthError message={error} />}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <label htmlFor="full-name" className="text-sm font-medium text-foreground">
-            Puno ime i prezime
-          </label>
-          <input
-            id="full-name"
-            type="text"
-            autoComplete="name"
-            required
-            disabled={isLoading}
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="Ime Prezime"
-            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label htmlFor="invite-password" className="text-sm font-medium text-foreground">
-            Lozinka
-          </label>
-          <input
-            id="invite-password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={6}
-            disabled={isLoading}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Najmanje 6 znakova"
-            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label htmlFor="invite-confirm" className="text-sm font-medium text-foreground">
-            Potvrdi lozinku
-          </label>
-          <input
-            id="invite-confirm"
-            type="password"
-            autoComplete="new-password"
-            required
-            disabled={isLoading}
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            placeholder="Ponovi lozinku"
-            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-          />
-        </div>
-
-        <button
-          type="submit"
+        <AuthInput
+          id="full-name"
+          label="Puno ime i prezime"
+          type="text"
+          autoComplete="name"
+          autoCapitalize="words"
+          required
           disabled={isLoading}
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60 transition-all"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          placeholder="Ime Prezime"
+        />
+
+        <AuthInput
+          id="invite-password"
+          label="Lozinka"
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={6}
+          disabled={isLoading}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Najmanje 6 znakova"
+        />
+
+        <AuthInput
+          id="invite-confirm"
+          label="Potvrdi lozinku"
+          type="password"
+          autoComplete="new-password"
+          required
+          disabled={isLoading}
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          placeholder="Ponovi lozinku"
+        />
+
+        <AuthSubmitButton
+          type="submit"
+          loading={isLoading}
+          loadingText="Aktivacija u tijeku..."
         >
-          {isLoading ? "Aktivacija u tijeku..." : "Aktiviraj račun"}
-        </button>
+          Aktiviraj račun
+        </AuthSubmitButton>
       </form>
     </div>
   );

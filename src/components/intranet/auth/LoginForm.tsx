@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { useAuth } from "@/hooks/use-auth";
 import { ApiError } from "@/lib/api/types";
+import {
+  AuthInput,
+  AuthSubmitButton,
+  AuthError,
+  AuthHeading,
+} from "./AuthFormControls";
 
 interface LoginFormProps {
   onForgotPassword: () => void;
@@ -20,6 +26,50 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // --- Google gumb ---
+  //
+  // Dvije odvojene stvari, namjerno razdvojene:
+  //
+  // 1. ŠIRINA. Google renderira iframe fiksne piksel širine i
+  //    prihvaća samo 200–400px. Mjerimo kontejner da gumb prati
+  //    formu. Ovo je SAMO dorada — gumb se renderira i bez mjere,
+  //    jer bi inače neuspjelo mjerenje značilo da gumba nema.
+  //
+  // 2. JE LI SE UOPĆE POJAVIO. Ako Google odbije (npr. origin nije
+  //    na popisu u Cloud Console), skripta tiho ne nacrta ništa i
+  //    korisnik gleda prazninu bez ikakvog objašnjenja. Zato nakon
+  //    kratke pauze provjeravamo je li iframe stvarno tu.
+  const googleWrapRef = useRef<HTMLDivElement>(null);
+  const [googleWidth, setGoogleWidth] = useState<number | undefined>(undefined);
+  const [googleMissing, setGoogleMissing] = useState(false);
+
+  useEffect(() => {
+    const element = googleWrapRef.current;
+    if (!element) return;
+
+    const measure = () => {
+      const width = Math.round(element.getBoundingClientRect().width);
+      if (width > 0) {
+        setGoogleWidth(Math.max(200, Math.min(400, width)));
+      }
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+
+    // Google ubaci <iframe> kad uspješno inicijalizira gumb
+    const check = setTimeout(() => {
+      setGoogleMissing(!element.querySelector("iframe"));
+    }, 3000);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(check);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,75 +112,58 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
 
   return (
     <div className="w-full space-y-6">
-      {/* Naslov */}
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Dobrodošli natrag
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Prijavite se u Apartments Šibenik intranet.
-        </p>
-      </div>
+      <AuthHeading
+        title="Dobrodošli natrag"
+        subtitle="Prijavite se u Apartments Šibenik intranet."
+      />
 
-      {/* Error poruka */}
-      {error && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      {error && <AuthError message={error} />}
 
-      {/* Forma */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-foreground">
-            Email adresa
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            disabled={isLoading}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@example.com"
-            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-          />
-        </div>
+        <AuthInput
+          id="email"
+          label="Email adresa"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          required
+          disabled={isLoading}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="admin@example.com"
+        />
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label htmlFor="password" className="text-sm font-medium text-foreground">
-              Lozinka
-            </label>
+        <AuthInput
+          id="password"
+          label="Lozinka"
+          type="password"
+          autoComplete="current-password"
+          required
+          disabled={isLoading}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
+          labelAction={
             <button
               type="button"
               onClick={onForgotPassword}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
+              className="shrink-0 py-1 text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
             >
               Zaboravili ste lozinku?
             </button>
-          </div>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            disabled={isLoading}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-          />
-        </div>
+          }
+        />
 
-        <button
+        <AuthSubmitButton
           type="submit"
-          disabled={isLoading}
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60 transition-all"
+          loading={isLoading}
+          loadingText="Prijava u tijeku..."
         >
-          {isLoading ? "Prijava u tijeku..." : "Prijavi se"}
-        </button>
+          Prijavi se
+        </AuthSubmitButton>
       </form>
 
       {/* Separator */}
@@ -143,17 +176,45 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
         </div>
       </div>
 
-      {/* Google gumb */}
-      <div className="flex w-full justify-center">
+      {/* Google gumb.
+          Google renderira iframe FIKSNE piksel širine — ne postoji
+          način da se rastegne CSS-om. Zato širinu mjerimo iz
+          kontejnera i prosljeđujemo je.
+
+          Prije je ovdje stajao width="320" uz overflow-hidden: na
+          užim ekranima iframe je bio širi od kontejnera, a jer je
+          centriran prelijevao se na obje strane i bio odrezan —
+          gumb se na mobitelu nije vidio. */}
+      <div ref={googleWrapRef} className="flex w-full justify-center">
         <GoogleLogin
+          // Remount pri promjeni širine (npr. rotacija ekrana) —
+          // Google ne prerenderira iframe sam od sebe
+          key={googleWidth ?? "auto"}
           onSuccess={handleGoogleSuccess}
           onError={() => setError("Google prijava otkazana ili neuspješna.")}
           useOneTap
           theme="outline"
           size="large"
+          width={googleWidth ? String(googleWidth) : undefined}
           text="continue_with"
         />
       </div>
+
+      {/* Gumb se nije pojavio — objasni zašto umjesto prazne rupe */}
+      {googleMissing && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-50 px-4 py-3 dark:border-amber-500/25 dark:bg-amber-950/20">
+          <p className="text-xs text-amber-800 text-pretty dark:text-amber-300">
+            <strong>Google prijava nije dostupna.</strong> Najčešći uzrok je da
+            adresa s koje otvarate stranicu nije upisana u{" "}
+            <em>Authorized JavaScript origins</em> u Google Cloud Console —
+            npr. kad se s mobitela spajate preko IP adrese umjesto
+            <code className="mx-1 font-mono">localhost</code>.
+          </p>
+          <p className="mt-1.5 text-xs text-amber-700 dark:text-amber-400">
+            Prijava emailom i lozinkom radi normalno.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
