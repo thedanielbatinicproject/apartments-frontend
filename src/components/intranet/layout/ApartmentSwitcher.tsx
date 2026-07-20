@@ -1,26 +1,24 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Building, Check, ChevronsUpDown } from "lucide-react";
+import { Home, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useCompany } from "@/lib/company/company-context";
+import { useApartment } from "@/lib/apartment/apartment-context";
 
 // ============================================================
-// Prekidač firme u headeru intraneta.
+// Prekidač apartmana u headeru intraneta — isti obrazac kao
+// CompanySwitcher, ali za apartmane (koristi ga npr. stranica
+// recenzija da zna za koji apartman uređuje sadržaj).
 //
-// Sakriva se kad postoji 0 ili 1 firma — tada nema što birati,
-// a prazan gumb bi samo zbunjivao.
-//
-// Na mobitelu prikazuje samo ikonu i skraćeni naziv, jer header
-// već nosi naslov stranice i oznaku role.
+// Sakriva se kad postoji 0 ili 1 apartman — tada nema što birati.
 // ============================================================
 
-export function CompanySwitcher() {
-  const { companies, selectedCompany, selectCompany, isLoading } = useCompany();
+export function ApartmentSwitcher() {
+  const { apartments, selectedApartment, selectApartment, isLoading } =
+    useApartment();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Zatvori pri kliku izvan
   useEffect(() => {
     if (!open) return;
 
@@ -39,25 +37,24 @@ export function CompanySwitcher() {
     };
   }, [open]);
 
-  // Nema izbora → nema prekidača
-  if (isLoading || companies.length <= 1) return null;
+  if (isLoading || apartments.length <= 1) return null;
 
   return (
-    <div ref={containerRef} className="relative shrink-0">
+    <div ref={containerRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label="Odaberi firmu"
+        aria-label="Odaberi apartman"
         className={cn(
-          "inline-flex min-h-[2.25rem] max-w-[13rem] items-center gap-1.5 rounded-lg border border-border bg-background px-2 text-xs font-medium transition-colors sm:max-w-[16rem] sm:px-2.5 sm:text-sm",
+          "inline-flex min-h-[2.25rem] max-w-[9rem] items-center gap-1.5 rounded-lg border border-border bg-background px-2 text-xs font-medium transition-colors sm:max-w-[14rem] sm:px-2.5 sm:text-sm",
           open ? "text-foreground" : "text-muted-foreground hover:text-foreground"
         )}
       >
-        <Building className="h-3.5 w-3.5 shrink-0" />
+        <Home className="h-3.5 w-3.5 shrink-0" />
         <span className="truncate">
-          {selectedCompany?.brandName ?? "Firma"}
+          {selectedApartment?.internalCode ?? "Apartman"}
         </span>
         <ChevronsUpDown className="h-3 w-3 shrink-0 opacity-60" />
       </button>
@@ -68,21 +65,21 @@ export function CompanySwitcher() {
           className="absolute right-0 z-50 mt-1.5 w-60 overflow-hidden rounded-xl border border-border bg-card shadow-lg"
         >
           <p className="border-b border-border px-3 py-2 text-[0.625rem] font-semibold uppercase tracking-wider text-muted-foreground">
-            Aktivna firma
+            Aktivni apartman
           </p>
 
           <ul className="max-h-72 overflow-y-auto p-1">
-            {companies.map((company) => {
-              const isActive = company.id === selectedCompany?.id;
+            {apartments.map((apartment) => {
+              const isActive = apartment.id === selectedApartment?.id;
 
               return (
-                <li key={company.id}>
+                <li key={apartment.id}>
                   <button
                     type="button"
                     role="option"
                     aria-selected={isActive}
                     onClick={() => {
-                      selectCompany(company.id);
+                      selectApartment(apartment.id);
                       setOpen(false);
                     }}
                     className={cn(
@@ -93,7 +90,8 @@ export function CompanySwitcher() {
                     )}
                   >
                     <span className="min-w-0 flex-1 truncate">
-                      {company.brandName}
+                      {apartment.internalCode}
+                      {apartment.name ? ` — ${apartment.name}` : ""}
                     </span>
                     {isActive && <Check className="h-3.5 w-3.5 shrink-0" />}
                   </button>
@@ -103,7 +101,7 @@ export function CompanySwitcher() {
           </ul>
 
           <p className="border-t border-border px-3 py-2 text-[0.6875rem] text-muted-foreground text-pretty">
-            Računi, katalozi i postavke prikazuju se za odabranu firmu.
+            Recenzije se prikazuju za odabrani apartman.
           </p>
         </div>
       )}

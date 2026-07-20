@@ -492,8 +492,10 @@ Nakon poziva `AdminGuestRecordResponse.personalDataPurgedAt` je postavljen. **Fr
 Admin skenira/fotografira ispunjen papirnati obrazac. Obrazac ima **dva bloka za goste**, pa jedna slika može dati **do dva zapisa**.
 
 - Content-Type: `multipart/form-data`, polje `image` (required)
-- Query/form: `apartmentId` (Long, **opcionalno**) — override; ako izostane, čita se oznaka s papira (`EN-1` → apartman 1)
+- Query/form: `apartmentId` (Long, **opcionalno**) — override
 - Response `data`: **`PaperScanResponse`**
+
+Apartman se određuje ovim redoslijedom: **1.** `apartmentId` iz zahtjeva (ako je poslan) → **2.** QR kod s obrasca (checkin URL nosi ID apartmana; najpouzdaniji izvor na fotografijama) → **3.** OCR oznake uz gornji lijevi marker (`EN-1`).
 
 ```jsonc
 {

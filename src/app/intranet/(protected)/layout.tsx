@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { IntranetShell } from "@/components/intranet/layout/IntranetShell";
 import { CompanyProvider } from "@/lib/company/company-context";
+import { ApartmentProvider } from "@/lib/apartment/apartment-context";
 
 // Auth-guard layout za cijelu (intranet) route grupu (sve unutar /intranet osim javnih auth ruta).
 // - Prikazuje loading spinner dok se inicijalizira auth state.
@@ -42,10 +43,12 @@ export default function ProtectedIntranetLayout({
     return null;
   }
 
-  // CompanyProvider je unutar auth guarda jer dohvat firmi traži JWT
+  // CompanyProvider/ApartmentProvider su unutar auth guarda jer dohvat traži JWT
   return (
     <CompanyProvider>
-      <IntranetShell>{children}</IntranetShell>
+      <ApartmentProvider>
+        <IntranetShell>{children}</IntranetShell>
+      </ApartmentProvider>
     </CompanyProvider>
   );
 }

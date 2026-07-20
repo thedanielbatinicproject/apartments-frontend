@@ -33,7 +33,7 @@ export function IntranetHeader() {
               AŠ
             </span>
           </div>
-          <h1 className="truncate text-base font-semibold text-foreground sm:text-sm">
+          <h1 className="min-w-0 truncate whitespace-nowrap text-sm font-semibold text-foreground">
             {title}
           </h1>
         </div>

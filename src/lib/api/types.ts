@@ -189,6 +189,19 @@ export interface AdminReviewResponse {
   sortOrder: number | null;
 }
 
+/** POST/PUT /api/admin/reviews — isti oblik za kreiranje i ispravak */
+export interface ReviewRequest {
+  apartmentId: number;
+  authorName: string;
+  rating: number;
+  text?: string | null;
+  languageCode?: string | null;
+  source?: ReviewSource | string | null;
+  reviewDate?: string | null;
+  visible?: boolean;
+  sortOrder?: number | null;
+}
+
 // ============================================================
 // FIRME — §10 (potrebno jer ApartmentRequest traži companyId)
 // ============================================================
@@ -507,6 +520,82 @@ export interface CompanyCatalogs {
   unitDescriptionCatalog: string[];
   serviceTypeCatalog: string[];
   paymentMethodCatalog: string[];
+}
+
+// ============================================================
+// §14 — Solar (ESP32 baterijski/solarni sustav)
+//
+// Frontend čita samo ADMIN rute (JWT). DEVICE rute (ingest,
+// relay/pending, relay/ack) su ESP32 → backend i ovdje se ne
+// koriste.
+// ============================================================
+
+/** GET /api/solar/latest, GET /api/solar/chart-data — jedno očitanje senzora */
+export interface SolarReadingResponse {
+  timestamp: string;
+  batteryVoltage: number | null;
+  batteryCurrent: number | null;
+  batteryPower: number | null;
+  batterySoc: number | null;
+  batteryTemperature: number | null;
+  pvVoltage: number | null;
+  pvCurrent: number | null;
+  pvPower: number | null;
+  loadVoltage: number | null;
+  loadCurrent: number | null;
+  loadPower: number | null;
+  yieldToday: number | null;
+  consumptionToday: number | null;
+  controllerStatus: number | null;
+  extra: Record<string, unknown> | null;
+}
+
+/** GET /api/solar/chart-data?range= */
+export type SolarChartRange = "24h" | "7d" | "30d";
+
+/** GET /api/solar/variables — metapodaci za dinamičke labele/jedinice */
+export interface SolarVariableResponse {
+  key: string;
+  labelHr: string;
+  labelEn: string;
+  unit: string;
+  group: string;
+}
+
+export type SolarPeriodType = "WEEKLY" | "MONTHLY";
+
+export type RelayAction = "ON" | "OFF" | "TOGGLE";
+export type RelayCommandStatus = "SENT" | "ACKED" | "FAILED" | "TIMEOUT";
+
+/**
+ * GET /api/solar/relay/status, POST /api/solar/relay/{id}/toggle —
+ * i payload broadcastan preko WebSocketa na /topic/solar-relay.
+ */
+export interface RelayStatusResponse {
+  relayId: number;
+  /** null = nikad potvrđeno (nepoznato stanje) */
+  currentState: boolean | null;
+  lastCommandStatus: RelayCommandStatus | null;
+  lastCommandAt: string | null;
+  lastAckAt: string | null;
+  /** true = komanda čeka da je ESP32 povuče i potvrdi */
+  pendingCommand: boolean;
+}
+
+/** GET /api/solar/reports/weekly, GET /api/solar/reports/monthly */
+export interface SolarAggregateResponse {
+  periodType: SolarPeriodType;
+  periodStart: string;
+  periodEnd: string;
+  totalYieldKwh: number | null;
+  totalConsumptionKwh: number | null;
+  avgBatteryVoltage: number | null;
+  minBatteryVoltage: number | null;
+  maxBatteryVoltage: number | null;
+  minBatterySoc: number | null;
+  peakPvPower: number | null;
+  avgPvPower: number | null;
+  readingCount: number;
 }
 
 // --- Greške ---
