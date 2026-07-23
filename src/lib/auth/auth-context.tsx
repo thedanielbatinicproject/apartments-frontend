@@ -31,6 +31,7 @@ import {
   getMe,
 } from "@/lib/api/auth";
 import type { AdminUserResponse } from "@/lib/api/types";
+import { apiBaseUrl } from "@/lib/api/base-url";
 
 // --- Tipovi ---
 
@@ -69,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       try {
         // Pokušaj refresh tokena
-        const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+        const API_BASE = apiBaseUrl();
         const response = await fetch(`${API_BASE}/api/auth/refresh`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -3,32 +3,34 @@
 import { useEffect } from "react";
 
 // ============================================================
-// Zaključavanje scrolla pozadine — s BROJAČEM.
+// Zaključavanje scrolla pozadine — s BROJAČEM, na <html> I <body>.
 //
-// ZAŠTO BROJAČ: prije je svaka komponenta sama radila
-//   const original = document.body.style.overflow;
-//   document.body.style.overflow = "hidden";
-//   return () => { document.body.style.overflow = original; }
+// DVIJE LEKCIJE UGRAĐENE OVDJE (obje su bile stvarni bugovi):
 //
-// To puca kad se dva sloja preklope. Konkretan slučaj:
-//   1. Detalj prijave se otvori  → sprema original "", stavlja hidden
-//   2. Dijalog potvrde se otvori → sprema original "hidden" (!), stavlja hidden
-//   3. Korisnik potvrdi brisanje → detalj se odmah unmounta, vraća ""
-//   4. Dijalog se zatvara s odgodom → vraća SVOJ original "hidden"
-//   → stranica ostaje trajno zaključana
+// 1. BROJAČ: kad se dva sloja preklope (dijalog iznad detalja),
+//    naivno "spremi original / vrati original" ostavi stranicu
+//    trajno zaključanom — drugi sloj kao "original" zapamti
+//    hidden prvoga. Brojač otpušta tek kad nitko ne drži.
 //
-// S brojačem se zaključavanje otpušta tek kad ga nitko više ne
-// drži, a izvorna vrijednost se pamti samo jednom.
+// 2. <html>, NE SAMO <body>: overflow s bodyja se propagira na
+//    viewport SAMO dok je html overflow `visible`. Naš globals
+//    stavlja `overflow-x: clip` na html (nužno za sticky), čime
+//    je propagacija prekinuta — i `body { overflow: hidden }`
+//    više NIŠTA ne zaključava. Zato se zaključava documentElement,
+//    a body uz njega radi potpunosti.
 // ============================================================
 
 let lockCount = 0;
-let originalOverflow: string | null = null;
+let originalHtmlOverflow: string | null = null;
+let originalBodyOverflow: string | null = null;
 
 function acquire() {
   if (typeof document === "undefined") return;
 
   if (lockCount === 0) {
-    originalOverflow = document.body.style.overflow;
+    originalHtmlOverflow = document.documentElement.style.overflow;
+    originalBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
   }
   lockCount++;
@@ -40,14 +42,16 @@ function release() {
   lockCount = Math.max(0, lockCount - 1);
 
   if (lockCount === 0) {
-    document.body.style.overflow = originalOverflow ?? "";
-    originalOverflow = null;
+    document.documentElement.style.overflow = originalHtmlOverflow ?? "";
+    document.body.style.overflow = originalBodyOverflow ?? "";
+    originalHtmlOverflow = null;
+    originalBodyOverflow = null;
   }
 }
 
 /**
  * Zaključava scroll dok je `active` true.
- * Sigurno je imati više aktivnih odjednom (dijalog nad dijalogom).
+ * Sigurno za više aktivnih odjednom (dijalog nad dijalogom).
  */
 export function useScrollLock(active: boolean): void {
   useEffect(() => {

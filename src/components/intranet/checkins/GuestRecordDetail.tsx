@@ -294,8 +294,16 @@ export function GuestRecordDetail({
       {/* ---------- Sadržaj: dual-screen ---------- */}
       <div
         className={cn(
-          "scroll-touch min-h-0 flex-1 overflow-y-auto lg:overflow-hidden",
-          hasImage ? "lg:grid lg:grid-cols-2" : ""
+          "scroll-touch min-h-0 flex-1 overflow-y-auto",
+          // lg:overflow-hidden SAMO uz grid — dual-pane layout (slika +
+          // forma) treba svaku stranu neovisno skrolati, pa vanjski
+          // kontejner mora prestati skrolati i prepustiti to unutarnjim
+          // lg:overflow-y-auto divovima. BEZ slike nema gridа/druge
+          // strane, pa je ostavljen lg:overflow-hidden ovdje ranije
+          // gasio JEDINI scroll koji postoji — sadržaj bi overflowao
+          // bez ikakvog načina da ga se skrola. Vidi bug: forma bez
+          // slike na desktopu/zoomu se nije mogla skrolati.
+          hasImage ? "lg:grid lg:grid-cols-2 lg:overflow-hidden" : ""
         )}
       >
         {/* --- Forma --- */}

@@ -11,7 +11,7 @@
 //                        se za apartmane nego za checkin dokumente)
 // ============================================================
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
+import { apiBaseUrl } from "@/lib/api/base-url";
 
 /**
  * Pretvara putanju iz backenda u punu URL adresu za <img src>.
@@ -26,5 +26,5 @@ export function fileUrl(path: string | null | undefined): string | null {
   }
 
   const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `${API_BASE_URL}${normalized}`;
+  return `${apiBaseUrl()}${normalized}`;
 }

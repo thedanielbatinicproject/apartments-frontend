@@ -16,9 +16,9 @@ import {
 } from "@/lib/auth/token-storage";
 import { ApiError, type ApiResponse } from "@/lib/api/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+import { apiBaseUrl } from "@/lib/api/base-url";
 
-if (!API_BASE_URL) {
+if (!process.env.NEXT_PUBLIC_API_URL) {
   throw new Error(
     "NEXT_PUBLIC_API_URL nije definiran. Provjeri .env.local datoteku."
   );
@@ -41,7 +41,7 @@ async function refreshAccessToken(): Promise<string> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) throw new Error("Nema refresh tokena.");
 
-  const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+  const response = await fetch(`${apiBaseUrl()}/api/auth/refresh`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refreshToken }),
@@ -82,7 +82,7 @@ export async function apiRequest<T>(
   const { body, params, skipAuth = false, rawResponse = false, ...fetchOptions } = options;
 
   // Gradi URL s query parametrima
-  const url = new URL(`${API_BASE_URL}${path}`);
+  const url = new URL(`${apiBaseUrl()}${path}`);
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {

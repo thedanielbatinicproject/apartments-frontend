@@ -19,11 +19,12 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { getRelayStatus, toggleRelay } from "@/lib/api/solar";
 import type { RelayAction, RelayStatusResponse } from "@/lib/api/types";
+import { apiBaseUrl } from "@/lib/api/base-url";
 
 const TOPIC_RELAY_STATUS = "/topic/solar-relay";
 
 function wsUrl(): string {
-  const base = process.env.NEXT_PUBLIC_API_URL;
+  const base = apiBaseUrl();
   return `${base}/ws/solar`;
 }
 

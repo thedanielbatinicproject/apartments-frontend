@@ -1,13 +1,38 @@
 // ============================================================
-// Reviews API — §13 (admin) iz API-REFERENCE.md
-//
-// §12 (javne rute /api/reviews/{apartmentId} i POST .../upvote)
-// se OVDJE namjerno ne dodaju — to je upvote sustav za javnu
-// stranicu, koristi se negdje drugdje, ne u intranetu.
+// Reviews API — §12 (javno) i §13 (admin) iz API-REFERENCE.md
 // ============================================================
 
 import { api } from "@/lib/api/client";
-import type { AdminReviewResponse, ReviewRequest } from "@/lib/api/types";
+import type {
+  AdminReviewResponse,
+  ReviewRequest,
+  ReviewResponse,
+  UpvoteResponse,
+} from "@/lib/api/types";
+
+// ---------- Javne rute ----------
+
+/** GET /api/reviews/{apartmentId} — samo visible: true recenzije */
+export async function getPublicReviews(
+  apartmentId: number
+): Promise<ReviewResponse[]> {
+  return api.get<ReviewResponse[]>(`/api/reviews/${apartmentId}`, {
+    skipAuth: true,
+  });
+}
+
+/** POST /api/reviews/{reviewId}/upvote — toggle, anonimno preko fingerprinta */
+export async function toggleReviewUpvote(
+  reviewId: number
+): Promise<UpvoteResponse> {
+  return api.post<UpvoteResponse>(
+    `/api/reviews/${reviewId}/upvote`,
+    undefined,
+    { skipAuth: true }
+  );
+}
+
+// ---------- Admin rute ----------
 
 /**
  * GET /api/admin/reviews?apartmentId=

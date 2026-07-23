@@ -15,7 +15,7 @@ export const STAY_STATUS_META: Record<
   { label: string; className: string }
 > = {
   PENDING: {
-    label: "Čeka goste",
+    label: "Čeka akciju gosta",
     className: "bg-muted text-muted-foreground",
   },
   PROCESSING: {

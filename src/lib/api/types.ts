@@ -202,6 +202,27 @@ export interface ReviewRequest {
   sortOrder?: number | null;
 }
 
+/** GET /api/reviews/{apartmentId} — javna verzija, samo visible: true recenzije */
+export interface ReviewResponse {
+  id: number;
+  authorName: string;
+  rating: number;
+  text: string | null;
+  languageCode: string | null;
+  source: ReviewSource | string;
+  reviewDate: string | null;
+  upvoteCount: number;
+  /** Računa se preko anonimnog fingerprinta (IP+User-Agent hash) */
+  upvotedByYou: boolean;
+}
+
+/** POST /api/reviews/{reviewId}/upvote — toggle */
+export interface UpvoteResponse {
+  reviewId: number;
+  upvoteCount: number;
+  upvoted: boolean;
+}
+
 // ============================================================
 // FIRME — §10 (potrebno jer ApartmentRequest traži companyId)
 // ============================================================
@@ -501,6 +522,29 @@ export interface AdminCorrectionRequest {
   documentExpiryDate?: string;
   arrivalDate?: string;
   departureDate?: string;
+}
+
+// ============================================================
+// JAVNI SELF-CHECKIN — §8 (gost, bez logina)
+// ============================================================
+
+/** Odgovor svih javnih checkin ruta */
+export interface CheckinStatusResponse {
+  recordId: number;
+  status: GuestStayStatus;
+  needsManualReview: boolean;
+  unreliableExtraction: boolean;
+  confidence: number | null;
+  fullName: string | null;
+  dateOfBirth: string | null;
+  placeOfBirth: string | null;
+  placeOfResidence: string | null;
+  documentNumber: string | null;
+  nationality: string | null;
+  /** OCR nije izvukao mjesto rođenja — gost ga MORA upisati */
+  placeOfBirthMissing: boolean;
+  placeOfResidenceMissing: boolean;
+  message: string | null;
 }
 
 /** §11 javna ruta — provjera autentičnosti preko QR/UID */

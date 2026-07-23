@@ -381,7 +381,8 @@ Ovo je online check-in tok koji gost prolazi sa svog telefona. Dva moguća puta:
 ### `POST /api/checkin/start`
 Prvi korak — gost odabire boravak i daje privolu za obradu podataka. Vraća `recordId` koji se koristi u svim sljedećim koracima.
 
-- Body (`CheckinStartRequest`): `{ "apartmentId": Long (required), "arrivalDate": LocalDate (required), "departureDate": LocalDate (required), "consentGiven": boolean (mora biti true) }`
+- Body (`CheckinStartRequest`): `{ "apartmentId": Long (required), "arrivalDate": LocalDate (required), "departureDate": LocalDate (required), "consentGiven": boolean (mora biti true), "language": string (optional, ISO 639-1: `hr`|`en`|`de`|`it`|`fr`|`ua`) }`
+- `language` se samo sprema uz zapis (bez logike) i vraća u `AdminGuestRecordResponse.language`. Nepodržana vrijednost daje `400`; `null`/izostavljeno prolazi.
 - Response `data`: `{ "recordId": Long }`
 
 ### `POST /api/checkin/{recordId}/document-scan` — multipart
@@ -524,6 +525,7 @@ id, apartmentId, apartmentInternalCode
 fullName, dateOfBirth, placeOfBirth, placeOfResidence
 documentType, documentNumber, nationality, sex, documentExpiryDate
 arrivalDate, departureDate
+language: string | null   // jezik self-checkina (ISO 639-1); null za paper/starije zapise
 status: GuestStayStatus, submissionMethod: "OCR_SELF"|"MANUAL_FORM"|"ADMIN_PAPER_SCAN"
 ocrConfidenceScore: Double, unreliableExtraction: boolean, needsManualReview: boolean
 reviewedAt: Instant

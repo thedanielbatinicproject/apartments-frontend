@@ -8,7 +8,7 @@
 
 import { ApiError } from "@/lib/api/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "(nije postavljen)";
+import { apiBaseUrl } from "@/lib/api/base-url";
 
 export interface DescribedError {
   /** Kratki naslov za prikaz */
@@ -87,7 +87,7 @@ export function describeError(error: unknown): DescribedError {
   ) {
     return {
       title: "Backend nije dostupan",
-      message: `Nije uspjelo spajanje na ${API_BASE_URL}. Provjerite je li Spring Boot pokrenut i je li NEXT_PUBLIC_API_URL ispravan u .env.local. Ako backend radi, uzrok može biti CORS (app.cors.allowed-origins).`,
+      message: `Nije uspjelo spajanje na ${apiBaseUrl() || "(nije postavljen)"}. Provjerite je li Spring Boot pokrenut i je li NEXT_PUBLIC_API_URL ispravan u .env.local. Ako backend radi, uzrok može biti CORS (app.cors.allowed-origins).`,
       detail: error instanceof Error ? error.message : String(error),
       isNetworkError: true,
       isRetryable: true,
