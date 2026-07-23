@@ -11,7 +11,6 @@
 // tekstura prati dnevnu paletu (danju svijetli vapnenac s mekim
 // sjenama, noću jedva vidljiva).
 // ============================================================
-
 export function StoneDefs() {
   return (
     <svg width="0" height="0" aria-hidden="true" className="absolute">
