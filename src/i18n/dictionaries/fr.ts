@@ -208,6 +208,230 @@ export const fr = {
     note: "Vous préférez Airbnb ? Les mêmes appartements y sont aussi listés — retrouvez le lien sur la page de chaque appartement.",
   },
 
+  houseRules: {
+    eyebrow: "Bon à savoir",
+    title: "Règlement intérieur",
+    subtitle: "Les deux appartements partagent la même adresse mais sont annoncés et gérés séparément. Choisissez l'hôte correspondant à votre réservation.",
+    understand: "J'ai compris",
+    switchLabels: { brigita: "Brigita", ivica: "Ivica" },
+    hosts: {
+      brigita: {
+        propertyName: "Apartments Brigita",
+        ownerLabel: "Propriétaire / Hôtesse",
+        ownerName: "Brigita Batinić",
+        phone: "+385 98 910 5640",
+        address: "Slobodana Macure 13, 22000 Šibenik, Croatie",
+        effective: "2025, valable jusqu'à nouvel ordre.",
+        apartments: [
+          {
+            name: "Appartement Studio",
+            description: "Capacité : jusqu'à 2 adultes. Un appartement compact et confortable, idéal pour les couples ou les voyageurs seuls en quête de tranquillité et de fonctionnalité.",
+          },
+          {
+            name: "Appartement avec jardin",
+            description: "Capacité : jusqu'à 3 adultes ou 2 adultes + 2 enfants. Comprend un jardin privé clos à l'usage exclusif des hôtes, sous réserve des règles de sécurité et de responsabilité supplémentaires décrites ci-dessous.",
+          },
+        ],
+        sections: [
+          {
+            heading: "1. Dispositions générales",
+            paragraphs: [
+              "Ce règlement intérieur définit les responsabilités de l'hôtesse et des hôtes. En confirmant une réservation ou en effectuant le check-in, l'hôte reconnaît accepter pleinement ces conditions. L'objectif est de maintenir un environnement paisible, sûr et légal pour tous les occupants, et d'assurer la bonne conservation du bien et des équipements.",
+            ],
+          },
+          {
+            heading: "2. Arrivée, départ et enregistrement",
+            bullets: [
+              "**Arrivée (check-in) :** à partir de 14h00. **Départ (check-out) :** avant 10h00 le jour du départ.",
+              "Les hôtes doivent présenter une pièce d'identité valide à leur arrivée pour l'enregistrement dans le système **eVisitor**, conformément à la loi croate sur le tourisme.",
+              "Seuls les hôtes enregistrés sont autorisés à passer la nuit. Les visiteurs ou personnes supplémentaires doivent être approuvés au préalable par l'hôtesse.",
+              "Le non-respect de l'obligation d'enregistrement peut entraîner la résiliation du séjour sans remboursement.",
+            ],
+          },
+          {
+            heading: "3. Usage des lieux et comportement",
+            paragraphs: [
+              "Les hôtes sont tenus de se comporter avec courtoisie, respect et responsabilité en toutes circonstances. Le logement se situe dans un quartier résidentiel calme ; le maintien de la tranquillité et de l'ordre public constitue donc une obligation légale et contractuelle.",
+            ],
+            highlight: {
+              bullets: [
+                "Il est **strictement interdit** d'organiser des fêtes, réunions ou événements impliquant des visiteurs non enregistrés, de la musique amplifiée ou des activités bruyantes.",
+                "Les heures de silence sont observées de **22h00 à 8h00**. Durant cette période, les hôtes doivent éviter tout bruit susceptible de déranger les autres hôtes ou les voisins — y compris les conversations bruyantes, le déplacement de meubles ou l'utilisation d'appareils bruyants.",
+                "Les hôtes doivent s'abstenir de tout comportement offensant, agressif ou menaçant envers l'hôtesse, les autres hôtes ou les riverains.",
+                "La possession ou l'usage de substances illégales, d'armes, de feux d'artifice ou de matières dangereuses sur les lieux est **strictement interdit** et entraînera une expulsion immédiate et un signalement à la police.",
+                "Fumer et vapoter ne sont pas autorisés à l'intérieur des appartements. Il est uniquement permis de fumer dans les espaces extérieurs désignés. Une élimination inappropriée des mégots entraînera des frais de nettoyage supplémentaires.",
+                "Les hôtes sont tenus de faire preuve de bon sens et de respecter les coutumes locales, les lois et les règlements régissant le comportement résidentiel en Croatie.",
+                "Le non-respect des normes de comportement peut entraîner la résiliation de l'hébergement sans remboursement et, dans les cas graves, un signalement aux autorités locales.",
+              ],
+              outro: "**Remarque :** l'hôtesse se réserve le droit d'entrer dans l'appartement en cas de trouble grave, de préoccupation en matière de sécurité ou de soupçon d'activités interdites. Une telle entrée sera consignée et justifiée uniquement dans le but de garantir la sécurité et le respect du règlement.",
+            },
+          },
+          {
+            heading: "4. Entretien du bien et dommages",
+            bullets: [
+              "Les hôtes doivent manipuler les meubles, appareils et l'ensemble du mobilier de manière responsable et conformément aux instructions fournies.",
+              "Tout dommage, dysfonctionnement ou perte doit être signalé immédiatement. Le fait de ne pas le signaler peut entraîner des frais après le départ.",
+              "Les hôtes sont financièrement responsables de tout dommage causé par négligence, mauvais usage ou acte intentionnel.",
+              "Ne déplacez ni n'emportez aucun objet (par exemple, serviettes, ustensiles de cuisine, décoration) hors du logement.",
+            ],
+          },
+          {
+            heading: "5. Propreté et entretien",
+            bullets: [
+              "Les appartements sont nettoyés professionnellement avant l'arrivée. Les hôtes doivent maintenir la propreté pendant leur séjour.",
+              "Jetez les déchets correctement et recyclez lorsque cela est possible. Les restes alimentaires, l'huile et les articles sanitaires ne doivent jamais être jetés dans les toilettes ou les canalisations.",
+              "Des frais de nettoyage supplémentaires peuvent s'appliquer si l'appartement est laissé excessivement sale, taché, malodorant ou en cas de mauvaise utilisation des équipements.",
+            ],
+          },
+          {
+            heading: "6. Jardin et espace extérieur (Appartement avec jardin)",
+            bullets: [
+              "Le jardin est réservé à l'usage exclusif des hôtes séjournant dans l'Appartement avec jardin. Les enfants doivent toujours être surveillés par un adulte.",
+              "Le feu ouvert est interdit, sauf usage sûr de la zone barbecue prévue à cet effet. Ne laissez jamais un feu sans surveillance et éteignez-le complètement après usage.",
+              "N'endommagez pas ou ne cueillez pas les plantes, n'utilisez pas de verre près des pelouses et ne déplacez pas le mobilier extérieur.",
+              "L'hôtesse décline toute responsabilité pour les accidents résultant d'un comportement imprudent ou négligent dans le jardin.",
+            ],
+          },
+          {
+            heading: "7. Responsabilité et assurance",
+            bullets: [
+              "L'hôtesse n'est pas responsable du vol, de la perte ou de l'endommagement d'effets personnels. Il est conseillé aux hôtes de sécuriser leurs objets de valeur et de souscrire une assurance voyage valide.",
+              "Les hôtes sont pleinement responsables de tout dommage, blessure ou incident résultant de leurs actes ou de leur négligence.",
+            ],
+          },
+          {
+            heading: "8. Clés et sécurité",
+            bullets: [
+              "Les hôtes sont responsables de toutes les clés remises. La perte d'une clé entraîne des frais minimums de **30 €**.",
+              "Verrouillez toujours les portes et fenêtres en quittant les lieux.",
+              "Les codes d'accès ou les clés ne doivent pas être dupliqués ni partagés avec des personnes non enregistrées.",
+            ],
+          },
+          {
+            heading: "9. Urgences",
+            bullets: [
+              "En cas d'urgence, composez le **112** (numéro d'urgence unique en Croatie).",
+              "Contactez immédiatement l'hôtesse pour tout problème urgent concernant le logement ou toute préoccupation de sécurité : **+385 98 910 5640**.",
+            ],
+          },
+          {
+            heading: "10. Violations du règlement",
+            bullets: [
+              "L'hôtesse peut résilier l'hébergement sans remboursement en cas de manquement grave tel qu'un comportement illégal, des dommages matériels ou des violations liées au bruit.",
+              "Les frais liés aux dommages, au nettoyage supplémentaire ou aux objets perdus seront facturés en conséquence.",
+              "Les infractions graves ou pénales seront signalées à la police et à l'inspection du tourisme.",
+            ],
+          },
+          {
+            heading: "11. Dispositions finales",
+            paragraphs: [
+              "Ce règlement intérieur fait partie intégrante du contrat d'hébergement entre l'hôte et Apartments Brigita. Tout litige est régi par le droit croate. Les hôtes confirment avoir lu et accepté l'ensemble des dispositions en effectuant le check-in.",
+            ],
+          },
+        ],
+        footerNote: [
+          "© 2025 Apartmani Brigita — Tous droits réservés",
+          "Adresse : Slobodana Macure 13, 22000 Šibenik, Croatie • Propriétaire : Brigita Batinić • Téléphone : +385 98 910 5640",
+        ],
+      },
+      ivica: {
+        propertyName: "Apartments Ivica",
+        ownerLabel: "Propriétaire",
+        ownerName: "Ivica Batinić",
+        phone: "+385 99 593 7343",
+        address: "Slobodana Macure 13, 22000 Šibenik, Croatie",
+        sections: [
+          {
+            heading: "1. Dispositions générales",
+            paragraphs: [
+              "Bienvenue aux Apartments Ivica. Ce règlement intérieur garantit un séjour confortable, sûr et légal pour tous les hôtes. En séjournant dans l'appartement, chaque hôte confirme avoir lu, compris et accepté de se conformer à ces règles pendant toute la durée de son séjour.",
+            ],
+          },
+          {
+            heading: "2. Arrivée et départ",
+            bullets: [
+              "L'arrivée (check-in) est possible à partir de **14h00** le jour de l'arrivée.",
+              "Le départ (check-out) doit être effectué avant **10h00** le jour du départ.",
+              "Tous les hôtes doivent présenter une pièce d'identité ou un passeport valide pour l'enregistrement dans le système **eVisitor**.",
+              "Seuls les hôtes enregistrés sont autorisés à séjourner dans l'appartement.",
+              "Tout changement dans le nombre d'occupants doit être immédiatement signalé au propriétaire.",
+            ],
+          },
+          {
+            heading: "3. Interdiction des visiteurs, fêtes et rassemblements",
+            highlight: {
+              intro: "Strictement interdit :",
+              bullets: [
+                "Faire entrer des personnes non enregistrées dans l'appartement (même temporairement).",
+                "Organiser des fêtes, réunions, célébrations ou toute forme d'activité de groupe.",
+                "S'engager dans toute activité inappropriée ou illégale, y compris, mais sans s'y limiter, la fourniture ou l'utilisation de services sexuels, l'abus de substances, ou tout comportement perturbant l'ordre public ou enfreignant la loi croate.",
+              ],
+              outro: "Toute violation de cette règle entraînera la **résiliation immédiate du contrat de location sans remboursement**, et le propriétaire se réserve le droit de **contacter les forces de l'ordre** et de signaler tout comportement illégal.",
+            },
+          },
+          {
+            heading: "4. Règlement intérieur et comportement",
+            bullets: [
+              "Veuillez réduire le bruit au minimum entre **22h00 et 8h00**.",
+              "Il est **interdit** de fumer à l'intérieur de l'appartement.",
+              "Les substances ou objets illégaux sont strictement interdits.",
+              "Les hôtes doivent traiter l'appartement et son inventaire avec soin et signaler immédiatement tout dommage.",
+              "Les frais de réparation ou de remplacement dus à la négligence de l'hôte sont facturés à celui-ci.",
+            ],
+          },
+          {
+            heading: "5. Équipements de l'appartement",
+            bullets: [
+              "L'appartement comprend : 2 lits, une salle de bain avec toilettes et une kitchenette.",
+              "Utilisez tous les appareils et le mobilier de manière responsable.",
+              "Éteignez les lumières, la climatisation et les appareils électriques en quittant l'appartement.",
+              "N'emportez aucun objet hors de l'appartement.",
+            ],
+          },
+          {
+            heading: "6. Responsabilité",
+            bullets: [
+              "Le propriétaire n'est pas responsable de la perte ou du vol d'effets personnels.",
+              "Le propriétaire n'est pas responsable des blessures causées par la négligence de l'hôte.",
+              "Les hôtes sont tenus de verrouiller l'appartement et de conserver les clés en lieu sûr. Une clé perdue entraînera des frais de remplacement de **30 €**.",
+            ],
+          },
+          {
+            heading: "7. Propreté et entretien",
+            bullets: [
+              "L'appartement est nettoyé et le linge de lit changé avant chaque nouveau séjour.",
+              "Un nettoyage supplémentaire peut être organisé sur demande.",
+              "Ne jetez aucun déchet ou reste alimentaire dans les toilettes ou les canalisations.",
+            ],
+          },
+          {
+            heading: "8. Sécurité",
+            bullets: [
+              "En cas d'incendie ou d'urgence, contactez immédiatement le propriétaire et les services d'urgence (**112**).",
+              "Ne manipulez pas les installations électriques ou d'eau.",
+            ],
+          },
+          {
+            heading: "9. Conséquences des violations du règlement",
+            paragraphs: ["En cas de violation de ces règles, le propriétaire se réserve le droit de :"],
+            bullets: [
+              "Résilier immédiatement le contrat d'hébergement.",
+              "Demander à l'hôte de quitter l'appartement sans remboursement.",
+              "Informer les autorités compétentes, y compris la police et l'inspection du tourisme.",
+            ],
+          },
+          {
+            heading: "10. Acceptation",
+            paragraphs: [
+              "En séjournant dans l'appartement, l'hôte confirme avoir lu, compris et accepté de se conformer intégralement à ce règlement intérieur.",
+            ],
+          },
+        ],
+        footerNote: ["© 2025 Apartments Ivica – Tous droits réservés"],
+      },
+    },
+  },
+
   checkin: {
     title: "Enregistrement des voyageurs",
 

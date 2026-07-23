@@ -53,6 +53,12 @@ export function PublicFooter() {
             <p className="italic">{dict.home.contact.footerTagline}</p>
             <p className="mt-1">© {new Date().getFullYear()} Apartments Šibenik</p>
           </div>
+          <Link
+            href="/rules"
+            className="text-xs text-[#f7f5ec]/50 underline-offset-2 transition-colors hover:text-[#f7f5ec]/80 hover:underline"
+          >
+            {dict.houseRules.title}
+          </Link>
         </div>
       </div>
     </footer>

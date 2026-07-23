@@ -208,6 +208,230 @@ export const hr = {
     note: "Radije preko Airbnba? Isti apartmani nalaze se i tamo — link pronađite na stranici svakog apartmana.",
   },
 
+  houseRules: {
+    eyebrow: "Dobro je znati",
+    title: "Kućni red",
+    subtitle: "Oba apartmana dijele istu adresu, ali se oglašavaju i vode zasebno. Odaberite domaćina koji odgovara vašoj rezervaciji.",
+    understand: "Razumijem",
+    switchLabels: { brigita: "Brigita", ivica: "Ivica" },
+    hosts: {
+      brigita: {
+        propertyName: "Apartmani Brigita",
+        ownerLabel: "Vlasnica / Domaćica",
+        ownerName: "Brigita Batinić",
+        phone: "+385 98 910 5640",
+        address: "Slobodana Macure 13, 22000 Šibenik, Hrvatska",
+        effective: "2025. i vrijedi do daljnjeg.",
+        apartments: [
+          {
+            name: "Studio Apartman",
+            description: "Kapacitet: do 2 odrasle osobe. Kompaktan i udoban apartman, idealan za parove ili individualne putnike koji traže mir i funkcionalnost.",
+          },
+          {
+            name: "Apartman s vrtom",
+            description: "Kapacitet: do 3 odrasle osobe ili 2 odrasle osobe + 2 djece. Uključuje privatni ograđeni vrt za isključivu upotrebu gostiju, uz dodatna sigurnosna pravila opisana niže.",
+          },
+        ],
+        sections: [
+          {
+            heading: "1. Opće odredbe",
+            paragraphs: [
+              "Ovaj kućni red definira odgovornosti domaćice i gostiju. Potvrdom rezervacije ili prijavom, gost potvrđuje potpuno prihvaćanje ovih uvjeta. Cilj je održati miran, siguran i zakonit boravak za sve te osigurati pravilno očuvanje imovine i opreme.",
+            ],
+          },
+          {
+            heading: "2. Prijava, odjava i registracija",
+            bullets: [
+              "**Prijava (check-in):** od 14:00. **Odjava (check-out):** do 10:00 na dan odlaska.",
+              "Gosti su dužni predočiti valjanu identifikacijsku ispravu po dolasku radi prijave u sustav **eVisitor**, sukladno hrvatskom zakonu o turizmu.",
+              "Boraviti smiju samo registrirani gosti. Posjetitelje ili dodatne osobe potrebno je unaprijed odobriti s domaćicom.",
+              "Nepridržavanje obveze registracije može rezultirati prekidom boravka bez povrata novca.",
+            ],
+          },
+          {
+            heading: "3. Korištenje prostora i ponašanje",
+            paragraphs: [
+              "Od gostiju se očekuje pristojno, s poštovanjem i odgovorno ponašanje u svakom trenutku. Nekretnina se nalazi u mirnom stambenom naselju, stoga je očuvanje mira i javnog reda zakonska i ugovorna obveza.",
+            ],
+            highlight: {
+              bullets: [
+                "**Strogo je zabranjeno** organiziranje zabava, okupljanja ili događaja s neregistriranim posjetiteljima, pojačanom glazbom ili glasnim društvenim aktivnostima.",
+                "Tišina se poštuje od **22:00 do 8:00**. U tom razdoblju gosti moraju izbjegavati svaku buku koja bi mogla ometati druge goste ili susjede — uključujući glasne razgovore, pomicanje namještaja ili korištenje glasnih uređaja.",
+                "Gosti se moraju suzdržati od svakog ponašanja koje je uvredljivo, agresivno ili prijeteće prema domaćici, drugim gostima ili lokalnim stanovnicima.",
+                "Posjedovanje ili korištenje ilegalnih supstanci, oružja, pirotehnike ili opasnih materijala u prostoru **strogo je zabranjeno** i rezultirat će trenutnim iseljenjem i prijavom policiji.",
+                "Pušenje i vejpanje nisu dopušteni unutar apartmana. Pušenje je dopušteno samo na za to predviđenim vanjskim mjestima. Neispravno odlaganje opušaka podliježe dodatnoj naplati čišćenja.",
+                "Gosti su dužni koristiti zdrav razum i poštovati lokalne običaje, zakone i propise koji uređuju stambeno ponašanje u Hrvatskoj.",
+                "Nepridržavanje standarda ponašanja može rezultirati prekidom smještaja bez povrata novca, a u ozbiljnijim slučajevima i prijavom nadležnim tijelima.",
+              ],
+              outro: "**Napomena:** Domaćica zadržava pravo ulaska u apartman u slučaju ozbiljnog ometanja, sigurnosnih razloga ili sumnje na zabranjene aktivnosti. Takav ulazak bit će zabilježen i opravdan isključivo u svrhu održavanja sigurnosti i pridržavanja pravila.",
+            },
+          },
+          {
+            heading: "4. Briga o imovini i šteta",
+            bullets: [
+              "Gosti su dužni odgovorno rukovati namještajem, uređajima i cjelokupnim inventarom, sukladno danim uputama.",
+              "Svaku štetu, kvar ili gubitak potrebno je odmah prijaviti. Propuštanje prijave može dovesti do naplate nakon odjave.",
+              "Gosti su financijski odgovorni za svu štetu uzrokovanu nemarom, nepravilnom uporabom ili namjerom.",
+              "Zabranjeno je premještati ili iznositi bilo koji predmet (npr. ručnike, kuhinjski pribor, dekoraciju) iz nekretnine.",
+            ],
+          },
+          {
+            heading: "5. Čistoća i održavanje",
+            bullets: [
+              "Apartmani se profesionalno čiste prije dolaska. Gosti bi trebali održavati čistoću tijekom boravka.",
+              "Otpad odlažite pravilno i reciklirajte gdje je primjenjivo. Otpad od hrane, ulje i higijenski proizvodi nikada se ne smiju bacati u WC školjku ili odvode.",
+              "Dodatna naknada za čišćenje može se naplatiti ako je apartman ostavljen pretjerano prljav, s mrljama, neugodnim mirisima ili neispravnom uporabom opreme.",
+            ],
+          },
+          {
+            heading: "6. Vrt i vanjski prostor (Apartman s vrtom)",
+            bullets: [
+              "Vrt je namijenjen isključivoj upotrebi gostiju koji borave u Apartmanu s vrtom. Djeca moraju uvijek biti pod nadzorom odrasle osobe.",
+              "Otvorena vatra je zabranjena osim sigurne upotrebe za to predviđenog roštilj mjesta. Vatru nikada ne ostavljajte bez nadzora i u potpunosti je ugasite nakon upotrebe.",
+              "Zabranjeno je oštećivati ili brati biljke, koristiti staklo blizu travnatih površina ili premještati vanjski namještaj.",
+              "Domaćica se odriče odgovornosti za nezgode uzrokovane nesigurnim ili nemarnim ponašanjem u vrtu.",
+            ],
+          },
+          {
+            heading: "7. Odgovornost i osiguranje",
+            bullets: [
+              "Domaćica nije odgovorna za krađu, gubitak ili štetu na osobnim stvarima. Gostima se preporučuje da osiguraju vrijedne predmete i imaju važeće putno osiguranje.",
+              "Gosti su u potpunosti odgovorni za svu štetu, ozljedu ili incident nastao njihovim djelovanjem ili nemarom.",
+            ],
+          },
+          {
+            heading: "8. Ključevi i sigurnost",
+            bullets: [
+              "Gosti su odgovorni za sve izdane ključeve. Izgubljeni ključ podliježe naknadi u minimalnom iznosu od **30 €**.",
+              "Uvijek zaključajte vrata i prozore prilikom napuštanja prostora.",
+              "Pristupni kodovi ili ključevi ne smiju se umnožavati niti dijeliti s neregistriranim osobama.",
+            ],
+          },
+          {
+            heading: "9. Hitni slučajevi",
+            bullets: [
+              "U hitnim slučajevima nazovite **112** (jedinstveni broj za hitne službe u Hrvatskoj).",
+              "Za hitne probleme s nekretninom ili sigurnosne razloge odmah kontaktirajte domaćicu: **+385 98 910 5640**.",
+            ],
+          },
+          {
+            heading: "10. Kršenje pravila",
+            bullets: [
+              "Domaćica može prekinuti smještaj bez povrata novca u slučaju ozbiljnih kršenja poput nezakonitog ponašanja, oštećenja imovine ili kršenja pravila o buci.",
+              "Troškovi štete, dodatnog čišćenja ili izgubljenih predmeta bit će naplaćeni sukladno tome.",
+              "Teža ili kaznena djela bit će prijavljena policiji i turističkoj inspekciji.",
+            ],
+          },
+          {
+            heading: "11. Završne odredbe",
+            paragraphs: [
+              "Ovaj kućni red čini sastavni dio ugovora o smještaju između gosta i Apartmana Brigita. Za sve sporove mjerodavno je hrvatsko pravo. Gosti potvrđuju da su pročitali i prihvatili sve odredbe dovršavanjem prijave (check-in).",
+            ],
+          },
+        ],
+        footerNote: [
+          "© 2025 Apartmani Brigita — Sva prava pridržana",
+          "Adresa: Slobodana Macure 13, 22000 Šibenik, Hrvatska • Vlasnica: Brigita Batinić • Telefon: +385 98 910 5640",
+        ],
+      },
+      ivica: {
+        propertyName: "Apartmani Ivica",
+        ownerLabel: "Vlasnik",
+        ownerName: "Ivica Batinić",
+        phone: "+385 99 593 7343",
+        address: "Slobodana Macure 13, 22000 Šibenik, Hrvatska",
+        sections: [
+          {
+            heading: "1. Opće odredbe",
+            paragraphs: [
+              "Dobrodošli u Apartmane Ivica. Ovaj kućni red osigurava ugodan, siguran i zakonit boravak za sve goste. Boravkom u apartmanu, svaki gost potvrđuje da je pročitao, razumio i pristaje na poštivanje ovih pravila tijekom cijelog trajanja boravka.",
+            ],
+          },
+          {
+            heading: "2. Prijava i odjava",
+            bullets: [
+              "Prijava (check-in) je moguća od **14:00** na dan dolaska.",
+              "Odjava (check-out) mora biti obavljena do **10:00** na dan odlaska.",
+              "Svi gosti moraju predočiti valjanu osobnu iskaznicu ili putovnicu radi registracije u sustavu **eVisitor**.",
+              "U apartmanu smiju boraviti samo registrirani gosti.",
+              "Svaka promjena broja osoba mora se odmah prijaviti vlasniku.",
+            ],
+          },
+          {
+            heading: "3. Zabrana posjetitelja, zabava i okupljanja",
+            highlight: {
+              intro: "Strogo zabranjeno:",
+              bullets: [
+                "Dovođenje neregistriranih osoba u apartman (čak i privremeno).",
+                "Organiziranje zabava, okupljanja, proslava ili bilo kakvih grupnih aktivnosti.",
+                "Uključivanje u bilo kakve neprimjerene ili nezakonite aktivnosti, uključujući, ali ne ograničavajući se na pružanje ili korištenje seksualnih usluga, zlouporabu supstanci, ili bilo kakvo ponašanje koje remeti javni red ili krši hrvatski zakon.",
+              ],
+              outro: "Svako kršenje ovog pravila rezultirat će **trenutnim raskidom ugovora o najmu bez povrata novca**, a vlasnik zadržava pravo **kontaktiranja tijela za provedbu zakona** i prijave nezakonitog ponašanja.",
+            },
+          },
+          {
+            heading: "4. Kućni red i ponašanje",
+            bullets: [
+              "Molimo svedite buku na minimum između **22:00 i 8:00**.",
+              "Pušenje unutar apartmana **nije dopušteno**.",
+              "Ilegalne supstance ili predmeti strogo su zabranjeni.",
+              "Gosti su dužni brižno se odnositi prema apartmanu i inventaru te odmah prijaviti svaku štetu.",
+              "Troškovi popravka ili zamjene uslijed nemara gosta naplaćuju se gostu.",
+            ],
+          },
+          {
+            heading: "5. Sadržaji apartmana",
+            bullets: [
+              "Apartman uključuje: 2 kreveta, kupaonicu s WC-om i kuhinjski kutak.",
+              "Sve uređaje i namještaj koristite odgovorno.",
+              "Isključite svjetla, klima uređaj i električne uređaje prilikom napuštanja apartmana.",
+              "Ne iznosite nikakve predmete iz apartmana.",
+            ],
+          },
+          {
+            heading: "6. Odgovornost",
+            bullets: [
+              "Vlasnik nije odgovoran za gubitak ili krađu osobnih stvari.",
+              "Vlasnik nije odgovoran za ozljede uzrokovane nemarom gosta.",
+              "Gosti su dužni zaključavati apartman i čuvati ključeve. Izgubljeni ključ podliježe naknadi zamjene u iznosu od **30 €**.",
+            ],
+          },
+          {
+            heading: "7. Čistoća i održavanje",
+            bullets: [
+              "Apartman se čisti, a posteljina mijenja prije svakog novog boravka.",
+              "Dodatno čišćenje moguće je dogovoriti na zahtjev.",
+              "Ne bacajte otpad ili hranu u WC školjku ili odvode.",
+            ],
+          },
+          {
+            heading: "8. Sigurnost",
+            bullets: [
+              "U slučaju požara ili hitnog slučaja, odmah kontaktirajte vlasnika i hitne službe (**112**).",
+              "Ne dirajte električne ili vodovodne instalacije.",
+            ],
+          },
+          {
+            heading: "9. Posljedice kršenja pravila",
+            paragraphs: ["U slučaju kršenja ovih pravila, vlasnik zadržava pravo:"],
+            bullets: [
+              "Odmah raskinuti ugovor o smještaju.",
+              "Zatražiti da gost napusti apartman bez povrata novca.",
+              "Obavijestiti nadležna tijela, uključujući policiju i turističku inspekciju.",
+            ],
+          },
+          {
+            heading: "10. Prihvaćanje",
+            paragraphs: [
+              "Boravkom u apartmanu, gost potvrđuje da je pročitao, razumio i pristao na poštivanje ovog kućnog reda u cijelosti.",
+            ],
+          },
+        ],
+        footerNote: ["© 2025 Apartmani Ivica – Sva prava pridržana"],
+      },
+    },
+  },
+
   checkin: {
     title: "Prijava gostiju",
 

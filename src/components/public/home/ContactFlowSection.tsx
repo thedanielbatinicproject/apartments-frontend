@@ -6,7 +6,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/i18n/language-context";
 import { LanguageSwitcherButton } from "@/components/guest/LanguageGate";
-import { useReveal } from "./use-reveal";
 import { WaveDivider } from "./WaveDivider";
 
 // ============================================================
@@ -34,8 +33,6 @@ export function ContactFlowSection({
   const t = dict.home.contact;
   const reduceMotion = useReducedMotion();
 
-  useReveal(sectionRef);
-
   const navLinks = [
     { href: "/apartmani", label: dict.nav.apartments },
     { href: "/o-sibeniku", label: dict.nav.about },
@@ -51,16 +48,16 @@ export function ContactFlowSection({
     >
       {/* Kontakt poziv */}
       <div className="mx-auto w-full max-w-2xl px-gutter pb-20 pt-14 text-center sm:pb-28 sm:pt-20">
-        <h2 className="fs-reveal text-[clamp(1.9rem,6.5vw,3rem)] font-semibold leading-tight text-balance [color:var(--hs-text-strong)] [font-family:var(--font-display)]">
+        <h2 className="text-[clamp(1.9rem,6.5vw,3rem)] font-semibold leading-tight text-balance [color:var(--hs-text-strong)] [font-family:var(--font-display)]">
           {t.title}
         </h2>
-        <p className="fs-reveal mx-auto mt-4 max-w-md text-[clamp(0.95rem,3vw,1.1rem)] leading-relaxed text-pretty [color:var(--hs-text-soft)]">
+        <p className="mx-auto mt-4 max-w-md text-[clamp(0.95rem,3vw,1.1rem)] leading-relaxed text-pretty [color:var(--hs-text-soft)]">
           {t.text}
         </p>
         <motion.div
           whileHover={reduceMotion ? undefined : { y: -3 }}
           whileTap={{ scale: 0.97 }}
-          className="fs-reveal mt-7 inline-block"
+          className="mt-7 inline-block"
         >
           <Link
             href="/kontakt"
@@ -141,6 +138,12 @@ export function ContactFlowSection({
                 © {new Date().getFullYear()} Apartments Šibenik
               </p>
             </div>
+            <Link
+              href="/rules"
+              className="text-xs text-[#f7f5ec]/50 underline-offset-2 transition-colors hover:text-[#f7f5ec]/80 hover:underline"
+            >
+              {dict.houseRules.title}
+            </Link>
           </div>
         </div>
 

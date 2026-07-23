@@ -5,6 +5,33 @@
 // ostale jezike da ga prevedu (satisfies Dictionary).
 // ============================================================
 
+// houseRules sekcije variraju (Brigita ima "apartments"/"effective",
+// highlight.intro postoji samo kod Ivice) — eksplicitni tip osigurava
+// da su ta polja DOSLJEDNO opcionalna u izvedenom Dictionary tipu,
+// umjesto da TS zaključi usko-doslovni oblik po hostu.
+interface HouseRulesSection {
+  heading: string;
+  paragraphs?: string[];
+  bullets?: string[];
+  highlight?: {
+    intro?: string;
+    bullets: string[];
+    outro?: string;
+  };
+}
+
+interface HouseRulesHost {
+  propertyName: string;
+  ownerLabel: string;
+  ownerName: string;
+  phone: string;
+  address: string;
+  effective?: string;
+  apartments?: { name: string; description: string }[];
+  sections: HouseRulesSection[];
+  footerNote: string[];
+}
+
 export const en = {
   nav: {
     home: "Home",
@@ -211,6 +238,230 @@ export const en = {
       directions: "Get directions",
     },
     note: "Prefer Airbnb? You'll find the same apartments listed there too — see each apartment's page for a direct link.",
+  },
+
+  houseRules: {
+    eyebrow: "Good to know",
+    title: "House Rules",
+    subtitle: "Both apartments share the same address but are listed and managed separately. Pick the host that matches your reservation.",
+    understand: "I understand",
+    switchLabels: { brigita: "Brigita", ivica: "Ivica" },
+    hosts: {
+      brigita: {
+        propertyName: "Apartments Brigita",
+        ownerLabel: "Owner / Host",
+        ownerName: "Brigita Batinić",
+        phone: "+385 98 910 5640",
+        address: "Slobodana Macure 13, 22000 Šibenik, Croatia",
+        effective: "2025 and valid until further notice.",
+        apartments: [
+          {
+            name: "Studio Apartment",
+            description: "Capacity: up to 2 adults. A compact and comfortable apartment ideal for couples or individual travelers seeking tranquility and functionality.",
+          },
+          {
+            name: "Apartment With Garden",
+            description: "Capacity: up to 3 adults or 2 adults + 2 children. Includes a private enclosed garden for exclusive guest use, subject to additional safety and liability rules described below.",
+          },
+        ],
+        sections: [
+          {
+            heading: "1. General Provisions",
+            paragraphs: [
+              "These House Rules define the responsibilities of both the host and the guests. By confirming a reservation or checking in, the guest acknowledges full acceptance of these terms. The aim is to maintain a peaceful, safe, and lawful environment for all occupants and to ensure the proper preservation of property and equipment.",
+            ],
+          },
+          {
+            heading: "2. Check-In, Check-Out, and Registration",
+            bullets: [
+              "**Check-in:** from 2:00 PM. **Check-out:** by 10:00 AM on departure day.",
+              "Guests must provide valid identification upon arrival for registration in the **eVisitor** system, in accordance with Croatian tourism law.",
+              "Only registered guests are permitted to stay overnight. Visitors or additional occupants must be approved by the host in advance.",
+              "Failure to comply with registration requirements may result in termination of stay without refund.",
+            ],
+          },
+          {
+            heading: "3. Use of Premises and Behavior",
+            paragraphs: [
+              "Guests are expected to conduct themselves with courtesy, respect, and responsibility at all times. The property is located in a quiet residential neighborhood; therefore, maintaining peace and public order is a legal and contractual obligation.",
+            ],
+            highlight: {
+              bullets: [
+                "It is **strictly prohibited** to organize parties, gatherings, or events involving unregistered visitors, amplified music, or loud social activities.",
+                "Quiet hours are observed from **10:00 PM to 8:00 AM**. During this period, guests must avoid any noise that may disturb other guests or neighbors — including loud conversations, moving furniture, or operating loud devices.",
+                "Guests shall refrain from any behavior that is offensive, aggressive, or threatening toward the host, other guests, or local residents.",
+                "Possession or use of illegal substances, weapons, fireworks, or hazardous materials on the premises is **strictly forbidden** and will result in immediate eviction and police notification.",
+                "Smoking and vaping are not permitted inside the apartments. Smoking is allowed only in designated outdoor areas. Improper disposal of cigarette butts is subject to additional cleaning charges.",
+                "Guests are obliged to use common sense and respect local customs, laws, and regulations governing residential conduct in Croatia.",
+                "Failure to comply with behavioral standards may result in termination of accommodation without refund and, in severe cases, reporting to local authorities.",
+              ],
+              outro: "**Note:** The host reserves the right to enter the apartment in cases of serious disturbance, safety concerns, or suspicion of prohibited activities. Such entry will be recorded and justified solely for the purpose of maintaining safety and compliance.",
+            },
+          },
+          {
+            heading: "4. Property Care and Damages",
+            bullets: [
+              "Guests must handle furniture, appliances, and all inventory responsibly and in accordance with instructions provided.",
+              "Any damage, malfunction, or loss must be reported immediately. Neglecting to do so may lead to post-checkout charges.",
+              "Guests are financially liable for all damages caused by negligence, misuse, or intentional acts.",
+              "Do not relocate or remove any item (e.g., towels, kitchenware, décor) from the property.",
+            ],
+          },
+          {
+            heading: "5. Cleanliness and Maintenance",
+            bullets: [
+              "The apartments are professionally cleaned before arrival. Guests should maintain cleanliness throughout their stay.",
+              "Dispose of waste properly and recycle where applicable. Food waste, oil, and sanitary items must never be flushed down toilets or drains.",
+              "Extra cleaning fees may apply if the apartment is left excessively dirty, with stains, odors, or misuse of equipment.",
+            ],
+          },
+          {
+            heading: "6. Garden and Outdoor Use (Apartment With Garden)",
+            bullets: [
+              "The garden is for exclusive use of guests staying in the Apartment With Garden. Children must always be supervised by an adult.",
+              "Open fire is prohibited except for safe use of the designated barbecue area. Never leave a fire unattended, and extinguish completely after use.",
+              "Do not damage or pick plants, use glass near grass areas, or displace outdoor furniture.",
+              "The host disclaims liability for accidents due to unsafe or negligent behavior in the garden area.",
+            ],
+          },
+          {
+            heading: "7. Liability and Insurance",
+            bullets: [
+              "The host is not responsible for theft, loss, or damage of personal items. Guests are advised to secure valuables and hold valid travel insurance.",
+              "Guests are fully liable for any damage, injury, or incident resulting from their actions or negligence.",
+            ],
+          },
+          {
+            heading: "8. Keys and Security",
+            bullets: [
+              "Guests are responsible for all issued keys. Lost keys incur a minimum fee of **€30**.",
+              "Always lock doors and windows when leaving the premises.",
+              "Access codes or keys must not be duplicated or shared with non-registered persons.",
+            ],
+          },
+          {
+            heading: "9. Emergencies",
+            bullets: [
+              "For emergencies, dial **112** (universal emergency number in Croatia).",
+              "Contact the host immediately for urgent property issues or safety concerns: **+385 98 910 5640**.",
+            ],
+          },
+          {
+            heading: "10. Rule Violations",
+            bullets: [
+              "The host may terminate accommodation without refund for serious breaches such as illegal behavior, property damage, or noise violations.",
+              "Costs for damages, extra cleaning, or lost items will be charged accordingly.",
+              "Severe or criminal offenses will be reported to police and tourism inspection authorities.",
+            ],
+          },
+          {
+            heading: "11. Final Provisions",
+            paragraphs: [
+              "These House Rules form an integral part of the accommodation agreement between the guest and Apartments Brigita. All disputes shall be governed by Croatian law. Guests confirm they have read and accepted all provisions by completing check-in.",
+            ],
+          },
+        ],
+        footerNote: [
+          "© 2025 Apartmani Brigita — All Rights Reserved",
+          "Address: Slobodana Macure 13, 22000 Šibenik, Croatia • Owner: Brigita Batinić • Phone: +385 98 910 5640",
+        ],
+      } as HouseRulesHost,
+      ivica: {
+        propertyName: "Apartments Ivica",
+        ownerLabel: "Owner",
+        ownerName: "Ivica Batinić",
+        phone: "+385 99 593 7343",
+        address: "Slobodana Macure 13, 22000 Šibenik, Croatia",
+        sections: [
+          {
+            heading: "1. General Provisions",
+            paragraphs: [
+              "Welcome to Apartments Ivica. These house rules ensure a comfortable, safe, and lawful stay for all guests. By staying in the apartment, each guest confirms that they have read, understood, and agree to comply with these rules during the entire duration of their stay.",
+            ],
+          },
+          {
+            heading: "2. Check-In and Check-Out",
+            bullets: [
+              "Check-in is available from **2:00 PM** on the day of arrival.",
+              "Check-out must be completed by **10:00 AM** on the day of departure.",
+              "All guests must present a valid ID or passport for registration in the **eVisitor** system.",
+              "Only registered guests are allowed to stay in the apartment.",
+              "Any change in the number of occupants must be immediately reported to the owner.",
+            ],
+          },
+          {
+            heading: "3. Prohibition of Visitors, Parties, and Gatherings",
+            highlight: {
+              intro: "Strictly forbidden:",
+              bullets: [
+                "Bringing any unregistered persons into the apartment (even temporarily).",
+                "Hosting parties, gatherings, celebrations, or any form of group activity.",
+                "Engaging in any inappropriate or illegal activities, including but not limited to the provision or use of sexual services, substance abuse, or any behavior that disturbs public order or violates Croatian law.",
+              ],
+              outro: "Any violation of this rule will result in **immediate termination of the rental agreement without refund**, and the owner reserves the right to **contact law enforcement authorities** and report unlawful behavior.",
+            },
+          },
+          {
+            heading: "4. House Rules and Conduct",
+            bullets: [
+              "Please keep noise to a minimum between **10:00 PM and 8:00 AM**.",
+              "Smoking inside the apartment is **not allowed**.",
+              "Illegal substances or items are strictly prohibited.",
+              "Guests must treat the apartment and its inventory with care and report any damages immediately.",
+              "Costs of repair or replacement due to guest negligence are charged to the guest.",
+            ],
+          },
+          {
+            heading: "5. Apartment Facilities",
+            bullets: [
+              "The apartment includes: 2 beds, a bathroom with toilet, and a kitchenette.",
+              "Use all appliances and furniture responsibly.",
+              "Turn off lights, air conditioning, and electrical devices when leaving the apartment.",
+              "Do not remove any items from the apartment.",
+            ],
+          },
+          {
+            heading: "6. Liability",
+            bullets: [
+              "The owner is not responsible for the loss or theft of personal belongings.",
+              "The owner is not liable for injuries caused by guest negligence.",
+              "Guests are required to lock the apartment and keep the keys safe. A lost key will incur a replacement fee of **€30**.",
+            ],
+          },
+          {
+            heading: "7. Cleanliness and Maintenance",
+            bullets: [
+              "The apartment is cleaned and bed linen is changed before each new stay.",
+              "Additional cleaning can be arranged upon request.",
+              "Do not dispose of waste or food in the toilet or drains.",
+            ],
+          },
+          {
+            heading: "8. Safety",
+            bullets: [
+              "In case of fire or emergency, immediately contact the owner and emergency services (**112**).",
+              "Do not tamper with electrical or water installations.",
+            ],
+          },
+          {
+            heading: "9. Consequences of Rule Violations",
+            paragraphs: ["In the event of violation of these rules, the owner reserves the right to:"],
+            bullets: [
+              "Terminate the accommodation agreement immediately.",
+              "Request that the guest vacate the apartment without refund.",
+              "Notify the competent authorities, including the police and tourism inspection.",
+            ],
+          },
+          {
+            heading: "10. Acceptance",
+            paragraphs: [
+              "By staying in the apartment, the guest confirms that they have read, understood, and agreed to comply with this House Rules document in its entirety.",
+            ],
+          },
+        ],
+        footerNote: ["© 2025 Apartments Ivica – All Rights Reserved"],
+      } as HouseRulesHost,
+    },
   },
 
   checkin: {

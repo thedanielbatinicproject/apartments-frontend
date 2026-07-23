@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/i18n/language-context";
-import { useReveal, useParallax } from "./use-reveal";
+import { useParallax } from "./use-reveal";
 
 // ============================================================
 // "O Šibeniku" teaser u flowu — ilustrirana tvrđava sv. Mihovila
@@ -27,7 +27,6 @@ export function AboutFlowSection({
   const t = dict.home.about;
   const reduceMotion = useReducedMotion();
 
-  useReveal(sectionRef);
   useParallax(sectionRef, ".abs-parallax", 55);
 
   return (
@@ -90,19 +89,19 @@ export function AboutFlowSection({
 
         {/* Tekst */}
         <div className="text-center sm:text-left">
-          <span className="fs-reveal block text-[clamp(0.7rem,2vw,0.85rem)] font-semibold uppercase tracking-[0.32em] [color:var(--hs-accent)]">
+          <span className="block text-[clamp(0.7rem,2vw,0.85rem)] font-semibold uppercase tracking-[0.32em] [color:var(--hs-accent)]">
             {t.eyebrow}
           </span>
-          <h2 className="fs-reveal mt-3 text-[clamp(1.9rem,6.5vw,3rem)] font-semibold leading-tight text-balance [color:var(--hs-text-strong)] [font-family:var(--font-display)]">
+          <h2 className="mt-3 text-[clamp(1.9rem,6.5vw,3rem)] font-semibold leading-tight text-balance [color:var(--hs-text-strong)] [font-family:var(--font-display)]">
             {t.title}
           </h2>
-          <p className="fs-reveal mt-4 text-[clamp(0.95rem,3vw,1.1rem)] leading-relaxed text-pretty [color:var(--hs-text-soft)]">
+          <p className="mt-4 text-[clamp(0.95rem,3vw,1.1rem)] leading-relaxed text-pretty [color:var(--hs-text-soft)]">
             {t.text}
           </p>
           <motion.div
             whileHover={reduceMotion ? undefined : { y: -3 }}
             whileTap={{ scale: 0.97 }}
-            className="fs-reveal mt-7 inline-block"
+            className="mt-7 inline-block"
           >
             <Link
               href="/o-sibeniku"

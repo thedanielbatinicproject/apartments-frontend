@@ -208,6 +208,230 @@ export const de = {
     note: "Lieber über Airbnb? Dieselben Apartments finden Sie auch dort — den Link finden Sie auf der Seite jedes Apartments.",
   },
 
+  houseRules: {
+    eyebrow: "Gut zu wissen",
+    title: "Hausordnung",
+    subtitle: "Beide Apartments teilen sich dieselbe Adresse, werden aber separat inseriert und verwaltet. Wählen Sie den Gastgeber, der zu Ihrer Reservierung passt.",
+    understand: "Verstanden",
+    switchLabels: { brigita: "Brigita", ivica: "Ivica" },
+    hosts: {
+      brigita: {
+        propertyName: "Apartments Brigita",
+        ownerLabel: "Eigentümerin / Gastgeberin",
+        ownerName: "Brigita Batinić",
+        phone: "+385 98 910 5640",
+        address: "Slobodana Macure 13, 22000 Šibenik, Kroatien",
+        effective: "2025 und gültig bis auf Weiteres.",
+        apartments: [
+          {
+            name: "Studio-Apartment",
+            description: "Kapazität: bis zu 2 Erwachsene. Ein kompaktes und komfortables Apartment, ideal für Paare oder Alleinreisende, die Ruhe und Funktionalität suchen.",
+          },
+          {
+            name: "Apartment mit Garten",
+            description: "Kapazität: bis zu 3 Erwachsene oder 2 Erwachsene + 2 Kinder. Verfügt über einen privaten, umzäunten Garten zur exklusiven Nutzung durch die Gäste, vorbehaltlich der zusätzlichen Sicherheits- und Haftungsregeln weiter unten.",
+          },
+        ],
+        sections: [
+          {
+            heading: "1. Allgemeine Bestimmungen",
+            paragraphs: [
+              "Diese Hausordnung legt die Verantwortlichkeiten von Gastgeberin und Gästen fest. Mit der Bestätigung einer Reservierung oder beim Check-in erkennt der Gast diese Bedingungen vollständig an. Ziel ist es, ein friedliches, sicheres und gesetzeskonformes Umfeld für alle Bewohner zu gewährleisten und die ordnungsgemäße Erhaltung von Eigentum und Ausstattung sicherzustellen.",
+            ],
+          },
+          {
+            heading: "2. Check-in, Check-out und Anmeldung",
+            bullets: [
+              "**Check-in:** ab 14:00 Uhr. **Check-out:** bis 10:00 Uhr am Abreisetag.",
+              "Gäste müssen bei der Ankunft einen gültigen Ausweis zur Registrierung im **eVisitor**-System gemäß dem kroatischen Tourismusgesetz vorlegen.",
+              "Nur registrierte Gäste dürfen übernachten. Besucher oder zusätzliche Personen müssen vorher von der Gastgeberin genehmigt werden.",
+              "Die Nichteinhaltung der Registrierungspflicht kann zur Beendigung des Aufenthalts ohne Rückerstattung führen.",
+            ],
+          },
+          {
+            heading: "3. Nutzung der Räumlichkeiten und Verhalten",
+            paragraphs: [
+              "Von den Gästen wird erwartet, dass sie sich jederzeit höflich, respektvoll und verantwortungsbewusst verhalten. Die Unterkunft liegt in einem ruhigen Wohngebiet; daher ist die Wahrung von Ruhe und öffentlicher Ordnung eine gesetzliche und vertragliche Pflicht.",
+            ],
+            highlight: {
+              bullets: [
+                "Es ist **strengstens untersagt**, Partys, Zusammenkünfte oder Veranstaltungen mit nicht registrierten Besuchern, verstärkter Musik oder lauten geselligen Aktivitäten zu organisieren.",
+                "Die Ruhezeiten gelten von **22:00 bis 8:00 Uhr**. In diesem Zeitraum müssen Gäste jeden Lärm vermeiden, der andere Gäste oder Nachbarn stören könnte — einschließlich lauter Gespräche, Möbelrücken oder laute Geräte.",
+                "Gäste müssen jegliches beleidigende, aggressive oder bedrohliche Verhalten gegenüber der Gastgeberin, anderen Gästen oder Anwohnern unterlassen.",
+                "Der Besitz oder Konsum illegaler Substanzen, Waffen, Feuerwerkskörper oder gefährlicher Materialien auf dem Grundstück ist **strengstens untersagt** und führt zu sofortiger Räumung und Meldung an die Polizei.",
+                "Rauchen und Dampfen sind innerhalb der Apartments nicht gestattet. Rauchen ist nur an den dafür vorgesehenen Außenbereichen erlaubt. Unsachgemäße Entsorgung von Zigarettenstummeln kann zusätzliche Reinigungsgebühren nach sich ziehen.",
+                "Gäste sind verpflichtet, gesunden Menschenverstand walten zu lassen und die örtlichen Sitten, Gesetze und Vorschriften für das Wohnverhalten in Kroatien zu respektieren.",
+                "Die Nichteinhaltung der Verhaltensstandards kann zur Beendigung der Unterkunft ohne Rückerstattung und in schweren Fällen zur Meldung an die örtlichen Behörden führen.",
+              ],
+              outro: "**Hinweis:** Die Gastgeberin behält sich das Recht vor, das Apartment bei schwerwiegenden Störungen, Sicherheitsbedenken oder dem Verdacht auf verbotene Aktivitäten zu betreten. Ein solcher Zutritt wird dokumentiert und ausschließlich zur Wahrung von Sicherheit und Einhaltung der Regeln gerechtfertigt.",
+            },
+          },
+          {
+            heading: "4. Pflege des Eigentums und Schäden",
+            bullets: [
+              "Gäste müssen Möbel, Geräte und das gesamte Inventar verantwortungsvoll und gemäß den bereitgestellten Anweisungen behandeln.",
+              "Jeder Schaden, jede Fehlfunktion oder jeder Verlust muss sofort gemeldet werden. Unterlassene Meldung kann zu Kosten nach dem Check-out führen.",
+              "Gäste haften finanziell für alle Schäden, die durch Fahrlässigkeit, Missbrauch oder Vorsatz verursacht werden.",
+              "Kein Gegenstand (z. B. Handtücher, Küchengeschirr, Dekoration) darf aus der Unterkunft entfernt werden.",
+            ],
+          },
+          {
+            heading: "5. Sauberkeit und Instandhaltung",
+            bullets: [
+              "Die Apartments werden vor der Ankunft professionell gereinigt. Gäste sollten die Sauberkeit während des Aufenthalts aufrechterhalten.",
+              "Entsorgen Sie Abfall ordnungsgemäß und recyceln Sie, wo möglich. Essensreste, Öl und Hygieneartikel dürfen niemals über Toilette oder Abfluss entsorgt werden.",
+              "Zusätzliche Reinigungsgebühren können anfallen, wenn das Apartment übermäßig verschmutzt, verfleckt, übelriechend oder die Ausstattung unsachgemäß genutzt hinterlassen wird.",
+            ],
+          },
+          {
+            heading: "6. Garten und Außenbereich (Apartment mit Garten)",
+            bullets: [
+              "Der Garten steht ausschließlich den Gästen des Apartments mit Garten zur Verfügung. Kinder müssen stets von einem Erwachsenen beaufsichtigt werden.",
+              "Offenes Feuer ist verboten, außer bei sicherer Nutzung des dafür vorgesehenen Grillbereichs. Lassen Sie ein Feuer niemals unbeaufsichtigt und löschen Sie es nach Gebrauch vollständig.",
+              "Pflanzen dürfen nicht beschädigt oder gepflückt werden, Glas darf nicht in der Nähe von Rasenflächen verwendet und Gartenmöbel dürfen nicht versetzt werden.",
+              "Die Gastgeberin übernimmt keine Haftung für Unfälle infolge unsicheren oder fahrlässigen Verhaltens im Garten.",
+            ],
+          },
+          {
+            heading: "7. Haftung und Versicherung",
+            bullets: [
+              "Die Gastgeberin haftet nicht für Diebstahl, Verlust oder Beschädigung persönlicher Gegenstände. Gästen wird empfohlen, Wertsachen zu sichern und eine gültige Reiseversicherung abzuschließen.",
+              "Gäste haften vollständig für alle Schäden, Verletzungen oder Vorfälle, die aus ihrem Handeln oder ihrer Fahrlässigkeit resultieren.",
+            ],
+          },
+          {
+            heading: "8. Schlüssel und Sicherheit",
+            bullets: [
+              "Gäste sind für alle ausgehändigten Schlüssel verantwortlich. Verlorene Schlüssel ziehen eine Gebühr von mindestens **30 €** nach sich.",
+              "Verschließen Sie beim Verlassen der Unterkunft stets Türen und Fenster.",
+              "Zugangscodes oder Schlüssel dürfen nicht vervielfältigt oder an nicht registrierte Personen weitergegeben werden.",
+            ],
+          },
+          {
+            heading: "9. Notfälle",
+            bullets: [
+              "Wählen Sie im Notfall **112** (einheitliche Notrufnummer in Kroatien).",
+              "Kontaktieren Sie die Gastgeberin sofort bei dringenden Problemen mit der Unterkunft oder Sicherheitsbedenken: **+385 98 910 5640**.",
+            ],
+          },
+          {
+            heading: "10. Regelverstöße",
+            bullets: [
+              "Die Gastgeberin kann die Unterkunft bei schwerwiegenden Verstößen wie rechtswidrigem Verhalten, Sachschäden oder Lärmverstößen ohne Rückerstattung beenden.",
+              "Kosten für Schäden, zusätzliche Reinigung oder verlorene Gegenstände werden entsprechend in Rechnung gestellt.",
+              "Schwerwiegende oder strafbare Handlungen werden der Polizei und der Tourismusinspektion gemeldet.",
+            ],
+          },
+          {
+            heading: "11. Schlussbestimmungen",
+            paragraphs: [
+              "Diese Hausordnung ist wesentlicher Bestandteil des Beherbergungsvertrags zwischen dem Gast und Apartments Brigita. Alle Streitigkeiten unterliegen kroatischem Recht. Mit Abschluss des Check-ins bestätigen die Gäste, dass sie alle Bestimmungen gelesen und akzeptiert haben.",
+            ],
+          },
+        ],
+        footerNote: [
+          "© 2025 Apartmani Brigita — Alle Rechte vorbehalten",
+          "Adresse: Slobodana Macure 13, 22000 Šibenik, Kroatien • Eigentümerin: Brigita Batinić • Telefon: +385 98 910 5640",
+        ],
+      },
+      ivica: {
+        propertyName: "Apartments Ivica",
+        ownerLabel: "Eigentümer",
+        ownerName: "Ivica Batinić",
+        phone: "+385 99 593 7343",
+        address: "Slobodana Macure 13, 22000 Šibenik, Kroatien",
+        sections: [
+          {
+            heading: "1. Allgemeine Bestimmungen",
+            paragraphs: [
+              "Willkommen in den Apartments Ivica. Diese Hausordnung gewährleistet einen komfortablen, sicheren und rechtmäßigen Aufenthalt für alle Gäste. Mit dem Aufenthalt im Apartment bestätigt jeder Gast, dass er diese Regeln gelesen und verstanden hat und sich während der gesamten Dauer seines Aufenthalts daran hält.",
+            ],
+          },
+          {
+            heading: "2. Check-in und Check-out",
+            bullets: [
+              "Der Check-in ist ab **14:00 Uhr** am Anreisetag möglich.",
+              "Der Check-out muss bis **10:00 Uhr** am Abreisetag abgeschlossen sein.",
+              "Alle Gäste müssen einen gültigen Ausweis oder Reisepass zur Registrierung im **eVisitor**-System vorlegen.",
+              "Nur registrierte Gäste dürfen im Apartment übernachten.",
+              "Jede Änderung der Personenzahl muss dem Eigentümer sofort gemeldet werden.",
+            ],
+          },
+          {
+            heading: "3. Verbot von Besuchern, Partys und Zusammenkünften",
+            highlight: {
+              intro: "Strengstens untersagt:",
+              bullets: [
+                "Das Mitbringen nicht registrierter Personen in das Apartment (auch nur vorübergehend).",
+                "Das Veranstalten von Partys, Zusammenkünften, Feiern oder jeglicher Art von Gruppenaktivitäten.",
+                "Die Beteiligung an unangemessenen oder illegalen Aktivitäten, einschließlich, aber nicht beschränkt auf das Anbieten oder die Nutzung sexueller Dienstleistungen, Drogenmissbrauch oder jegliches Verhalten, das die öffentliche Ordnung stört oder gegen kroatisches Recht verstößt.",
+              ],
+              outro: "Jeder Verstoß gegen diese Regel führt zur **sofortigen Beendigung des Mietvertrags ohne Rückerstattung**, und der Eigentümer behält sich das Recht vor, **Strafverfolgungsbehörden zu kontaktieren** und rechtswidriges Verhalten zu melden.",
+            },
+          },
+          {
+            heading: "4. Hausordnung und Verhalten",
+            bullets: [
+              "Bitte reduzieren Sie Lärm zwischen **22:00 und 8:00 Uhr** auf ein Minimum.",
+              "Rauchen im Apartment ist **nicht gestattet**.",
+              "Illegale Substanzen oder Gegenstände sind strengstens untersagt.",
+              "Gäste müssen das Apartment und dessen Inventar sorgfältig behandeln und jeden Schaden sofort melden.",
+              "Kosten für Reparatur oder Ersatz aufgrund von Fahrlässigkeit des Gastes werden dem Gast in Rechnung gestellt.",
+            ],
+          },
+          {
+            heading: "5. Ausstattung des Apartments",
+            bullets: [
+              "Das Apartment umfasst: 2 Betten, ein Badezimmer mit WC und eine Kochnische.",
+              "Nutzen Sie alle Geräte und Möbel verantwortungsvoll.",
+              "Schalten Sie Licht, Klimaanlage und elektrische Geräte aus, wenn Sie das Apartment verlassen.",
+              "Entfernen Sie keine Gegenstände aus dem Apartment.",
+            ],
+          },
+          {
+            heading: "6. Haftung",
+            bullets: [
+              "Der Eigentümer haftet nicht für Verlust oder Diebstahl persönlicher Gegenstände.",
+              "Der Eigentümer haftet nicht für Verletzungen, die durch Fahrlässigkeit des Gastes verursacht wurden.",
+              "Gäste müssen das Apartment abschließen und die Schlüssel sicher aufbewahren. Ein verlorener Schlüssel zieht eine Ersatzgebühr von **30 €** nach sich.",
+            ],
+          },
+          {
+            heading: "7. Sauberkeit und Instandhaltung",
+            bullets: [
+              "Das Apartment wird gereinigt und die Bettwäsche vor jedem neuen Aufenthalt gewechselt.",
+              "Zusätzliche Reinigung kann auf Anfrage vereinbart werden.",
+              "Entsorgen Sie keinen Abfall oder Essensreste über Toilette oder Abfluss.",
+            ],
+          },
+          {
+            heading: "8. Sicherheit",
+            bullets: [
+              "Kontaktieren Sie bei Feuer oder Notfall sofort den Eigentümer und den Notdienst (**112**).",
+              "Manipulieren Sie keine elektrischen oder Wasserinstallationen.",
+            ],
+          },
+          {
+            heading: "9. Folgen von Regelverstößen",
+            paragraphs: ["Im Falle eines Verstoßes gegen diese Regeln behält sich der Eigentümer das Recht vor:"],
+            bullets: [
+              "Die Unterkunftsvereinbarung sofort zu beenden.",
+              "Zu verlangen, dass der Gast das Apartment ohne Rückerstattung verlässt.",
+              "Die zuständigen Behörden, einschließlich Polizei und Tourismusinspektion, zu benachrichtigen.",
+            ],
+          },
+          {
+            heading: "10. Annahme",
+            paragraphs: [
+              "Mit dem Aufenthalt im Apartment bestätigt der Gast, dass er dieses Hausordnungsdokument vollständig gelesen, verstanden und akzeptiert hat.",
+            ],
+          },
+        ],
+        footerNote: ["© 2025 Apartments Ivica – Alle Rechte vorbehalten"],
+      },
+    },
+  },
+
   checkin: {
     title: "Gäste-Check-in",
 
