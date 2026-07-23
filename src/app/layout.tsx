@@ -11,13 +11,37 @@ const inter = Inter({
   display: "swap",
 });
 
+const SITE_URL = "https://apartments-sibenik.com";
+const SITE_NAME = "Apartments Šibenik";
+const SITE_DESCRIPTION =
+  "Tri obiteljska apartmana u srcu starog kamenog grada Šibenika, u kvartu Plišac — na kratkoj šetnji od mora, tvrđava i katedrale. Domaćini Brigita i Ivica dočekuju goste osobno.";
+
 export const metadata: Metadata = {
-  title: "Apartments Šibenik",
-  description: "Apartments Šibenik - Dobrodošli u apartmane Šibenik!",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — apartmani u starom gradu`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — apartmani u starom gradu`,
+    description: SITE_DESCRIPTION,
+    locale: "hr_HR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — apartmani u starom gradu`,
+    description: SITE_DESCRIPTION,
+  },
   // PWA-like ponašanje kad korisnik doda stranicu na home screen iPhonea
   appleWebApp: {
     capable: true,
-    title: "Apartments Šibenik",
+    title: SITE_NAME,
     statusBarStyle: "black-translucent",
   },
   formatDetection: {

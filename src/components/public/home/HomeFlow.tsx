@@ -140,7 +140,20 @@ export function HomeFlow() {
     updateCurrentSection();
     window.addEventListener("scroll", onScroll, { passive: true });
 
+    // 4) Fraunces se učitava s display:"swap" — dok se ne zamijeni s
+    // fallback fonta, naslovi u sekcijama ispod heroa mijenjaju visinu
+    // (drukčiji metrics), što pomakne sve ispod. ScrollTrigineri za
+    // .fs-reveal su do tog trenutka već izmjereni s POGREŠNIM pozicijama
+    // sekcija — na sporijim (mobilnim) mrežama font zna stići i NAKON
+    // toga, pa "top 78%" okidač ostane zauvijek pogrešno postavljen i
+    // tekst se nikad ne otkrije. Refresh nakon fonts.ready ispravlja to.
+    let cancelled = false;
+    document.fonts?.ready.then(() => {
+      if (!cancelled) ScrollTrigger.refresh();
+    });
+
     return () => {
+      cancelled = true;
       window.removeEventListener("scroll", onScroll);
       if (tickerCallback) gsap.ticker.remove(tickerCallback);
       lenis?.destroy();

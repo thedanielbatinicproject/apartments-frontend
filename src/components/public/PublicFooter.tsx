@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/i18n/language-context";
 import { WaveDivider } from "@/components/public/home/WaveDivider";
 
@@ -27,6 +28,13 @@ export function PublicFooter() {
         style={{ background: "var(--hs-sea-near)" }}
       >
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-gutter py-8 text-center">
+          <Image
+            src="/images/logo.png"
+            alt=""
+            width={64}
+            height={64}
+            className="h-10 w-10 rounded-full"
+          />
           <p className="text-base font-semibold italic text-[#f7f5ec] [font-family:var(--font-display)]">
             Apartments Šibenik
           </p>

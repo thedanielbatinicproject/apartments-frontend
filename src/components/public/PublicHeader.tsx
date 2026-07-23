@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/language-context";
@@ -36,6 +37,14 @@ export function PublicHeader() {
     >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-gutter sm:h-16">
         <Link href="/" className="flex min-w-0 items-center gap-2">
+          <Image
+            src="/images/logo.png"
+            alt=""
+            width={72}
+            height={72}
+            priority
+            className="h-8 w-8 shrink-0 rounded-full sm:h-9 sm:w-9"
+          />
           <span className="truncate text-lg font-semibold italic [color:var(--hs-text-strong)] [font-family:var(--font-display)] sm:text-xl">
             Apartments Šibenik
           </span>

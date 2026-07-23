@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/i18n/language-context";
@@ -104,6 +105,13 @@ export function ContactFlowSection({
 
         <div className="relative mx-auto w-full max-w-5xl px-gutter pb-safe pt-16">
           <div className="flex flex-col items-center gap-5 pb-8 text-center">
+            <Image
+              src="/images/logo.png"
+              alt=""
+              width={64}
+              height={64}
+              className="h-10 w-10 rounded-full"
+            />
             <p className="relative text-lg font-semibold italic text-[#f7f5ec] [font-family:var(--font-display)]">
               Apartments Šibenik
               <span

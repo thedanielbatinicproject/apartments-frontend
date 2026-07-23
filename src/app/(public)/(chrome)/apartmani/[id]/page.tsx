@@ -13,14 +13,33 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
 
+  const canonical = `/apartmani/${id}`;
+
   try {
     const apartment = await getPublicApartment(Number(id));
     return {
-      title: `${apartment.name} — Apartments Šibenik`,
+      title: apartment.name,
       description: apartment.description,
+      alternates: { canonical },
+      openGraph: {
+        title: `${apartment.name} | Apartments Šibenik`,
+        description: apartment.description,
+        siteName: "Apartments Šibenik",
+        locale: "hr_HR",
+        type: "website",
+        url: canonical,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${apartment.name} | Apartments Šibenik`,
+        description: apartment.description,
+      },
     };
   } catch {
-    return { title: "Apartments Šibenik" };
+    return {
+      title: "Apartman",
+      alternates: { canonical },
+    };
   }
 }
 
