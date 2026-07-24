@@ -418,10 +418,18 @@ Zadnji korak — gost pregledava izvučene/upisane podatke i potvrđuje (ili isp
 - Response `data`: `CheckinStatusResponse`
 - Ako je izvorno OCR bio pouzdan (`!unreliableExtraction && confidence >= 0.96`) → status postaje `VERIFIED`. Inače ostaje `MANUAL_REVIEW` (čeka admin pregled).
 
+### `POST /api/checkin/{recordId}/abandon`
+Gost je odustao od prijave. Zapis se **ne briše** — dobiva status `ABANDONED`, da admin razlikuje "gost odustao" od "čeka akciju gosta".
+
+- Path: `recordId` (Long)
+- Body: nema
+- Response `data`: `null`
+- Idempotentno. Djeluje samo na zapise koji još čekaju gosta (`PENDING`/`PROCESSING`/`FAILED`); već dovršena prijava (`VERIFIED`/`MANUAL_REVIEW` nakon confirm/manual) se **ne dira** — zalutali poziv ne smije poništiti valjanu prijavu.
+
 **`CheckinStatusResponse`** (zajednički oblik za sve gornje rute):
 ```
 recordId: Long
-status: "PENDING"|"PROCESSING"|"VERIFIED"|"FAILED"|"MANUAL_REVIEW"|"EXPIRED"
+status: "PENDING"|"PROCESSING"|"VERIFIED"|"FAILED"|"MANUAL_REVIEW"|"EXPIRED"|"ABANDONED"
 needsManualReview: boolean
 unreliableExtraction: boolean
 confidence: Double (nullable)
@@ -683,6 +691,8 @@ Briše dokument — dopušteno i za `ISSUED`.
 | Obrisan **zadnji** dokument u nizu (firma + tip + godina) | smanjuje se za 1, broj se oslobađa | `"Dokument obrisan, broj oslobođen"` |
 | Obrisan dokument **iz sredine** niza | ne dira se, u nizu ostaje rupa | `"Dokument obrisan"` |
 
+Ako je iz ovog dokumenta konvertiran drugi (npr. Račun iz ovog Predračuna), ta se veza (`convertedFromId`) raskida na dokumentima-djeci prije brisanja — inače bi DELETE puknuo na FK constraintu. Djeca ostaju, samo im `convertedFromId` postane `null`.
+
 > **Oslobođeni broj se ponovno dodjeljuje.** Ako je gost već dobio PDF s brojem `5/2026`, a taj dokument se obriše, sljedeći izdani dokument opet dobiva `5/2026` — dva različita dokumenta s istim brojem u optjecaju. Brisati samo dokumente koji nisu izašli iz kuće; za sve ostalo koristiti storno.
 
 #### `POST /api/admin/invoices/{companyId}/{invoiceId}/convert`
@@ -776,11 +786,62 @@ Praćenje solarnog/baterijskog sustava (ESP32 uređaj na terenu) + daljinsko upr
 ### DEVICE rute — **ne koriste JWT**, autenticiraju se preko headera `X-Device-Secret` (provjerava ga `DeviceAuthGuard` ručno unutar controllera, NE Spring Security filter chain). Frontend ove rute vjerojatno neće zvati (to je ESP32 → backend komunikacija), ali su navedene radi potpunosti.
 
 #### `POST /api/solar/ingest`
-ESP32 šalje očitanje senzora.
+ESP32 šalje očitanje senzora. Sva su polja **opcionalna** (nullable) — pošalje se samo ono što uređaj ima.
 
 - Header: `X-Device-Secret: <secret>` (required)
-- Body (`SolarIngestRequest`): `{ timestamp: Instant (optional, default = vrijeme primitka), batteryVoltage, batteryCurrent, batteryPower: Double, batterySoc: Integer, batteryTemperature: Double, pvVoltage, pvCurrent, pvPower: Double, loadVoltage, loadCurrent, loadPower: Double, yieldToday, consumptionToday: Double, controllerStatus: Integer, extra: Map<String,Object> }`
+- Body (`SolarIngestRequest`) — vidi **potpunu tablicu varijabli** ispod
 - Response `data`: `null`
+
+**Popis svih varijabli.** Kolona **JSON ključ (ingest)** je točan naziv koji ESP32 šalje u tijelu (osnovna polja idu kao camelCase, "dodatna" polja pod sirovim snake_case imenom). Kolona **Polje u odgovoru** je naziv istog podatka u `SolarReadingResponse` / `SolarVariableResponse.key` (uvijek camelCase). Kolona **grupa** odgovara `SolarVariableResponse.group`.
+
+| JSON ključ (ingest) | Polje u odgovoru | Tip | Jedinica | Grupa | Opis |
+|---|---|---|---|---|---|
+| `timestamp` | `timestamp` | Instant (ISO-8601) | — | — | Ako je `null` → uzima se vrijeme primitka |
+| `batteryVoltage` | `batteryVoltage` | Double | V | battery | Napon baterije |
+| `batteryCurrent` | `batteryCurrent` | Double | A | battery | Struja baterije |
+| `batteryPower` | `batteryPower` | Double | W | battery | Snaga baterije |
+| `batterySoc` | `batterySoc` | Integer | % | battery | Napunjenost (state of charge) |
+| `batteryTemperature` | `batteryTemperature` | Double | °C | battery | Temperatura baterije |
+| `pvVoltage` | `pvVoltage` | Double | V | pv | Napon panela |
+| `pvCurrent` | `pvCurrent` | Double | A | pv | Struja panela |
+| `pvPower` | `pvPower` | Double | W | pv | Snaga panela |
+| `loadVoltage` | `loadVoltage` | Double | V | load | Napon potrošača |
+| `loadCurrent` | `loadCurrent` | Double | A | load | Struja potrošača |
+| `loadPower` | `loadPower` | Double | W | load | Snaga potrošača |
+| `yieldToday` | `yieldToday` | Double | kWh | totals | Proizvedeno danas |
+| `consumptionToday` | `consumptionToday` | Double | kWh | totals | Potrošeno danas |
+| `controllerStatus` | `controllerStatus` | Integer | — | — | Sirovi status kontrolera |
+| `pv_charger_radiator_temp` | `pvChargerRadiatorTemp` | Double | °C | pv | Temperatura radijatora PV punjača |
+| `pv_relay` | `pvRelayState` | Integer | — | pv | Stanje PV releja (telemetrija s uređaja) |
+| `pv_charger_accumulated_day` | `pvChargerAccumulatedDay` | Integer | — | pv | Dnevno akumulirano vrijeme rada PV punjača |
+| `pv_charger_accumulated_hour` | `pvChargerAccumulatedHour` | Integer | — | pv | Sati rada PV punjača |
+| `pv_charger_accumulated_minute` | `pvChargerAccumulatedMinute` | Integer | — | pv | Minute rada PV punjača |
+| `pv_charger_battery_voltage` | `pvChargerBatteryVoltage` | Double | V | pv | Napon baterije mjeren na PV punjaču |
+| `pv_charger_workstate` | `pvChargerWorkState` | Integer | — | pv | Radno stanje PV punjača |
+| `inverter_bus_voltage` | `inverterBusVoltage` | Double | V | inverter | Napon sabirnice invertera |
+| `inverter_voltage` | `inverterOutputVoltage` | Double | V | inverter | Izlazni napon invertera |
+| `inverter_current` | `inverterCurrent` | Double | A | inverter | Struja invertera |
+| `inverter_power` | `inverterPower` | Double | W | inverter | Snaga invertera |
+| `inverter_system_load` | `inverterSystemLoad` | Double | W | inverter | Ukupno opterećenje sustava invertera |
+| `inverter_ac_radiator_temp` | `inverterAcRadiatorTemp` | Double | °C | inverter | Temperatura AC radijatora invertera |
+| `inverter_transformer_temp` | `inverterTransformerTemp` | Double | °C | inverter | Temperatura transformatora invertera |
+| `inverter_dc_radiator_temp` | `inverterDcRadiatorTemp` | Double | °C | inverter | Temperatura DC radijatora invertera |
+| `load_percent` | `inverterLoadPercent` | Double | % | inverter | Postotak opterećenja invertera |
+| `inverter_arrow_flag` | `inverterArrowFlag` | Integer | — | inverter | Zastavica strelice invertera (sirovo) |
+| `charger_total_produced_energy` | `chargerTotalProducedEnergy` | Double | kWh | totals | Ukupno proizvedena energija punjača (kumulativno) |
+| `discharger_total_mwh` | `dischargerTotalMwh` | Double | MWh | totals | Ukupno ispražnjena energija (MWh dio) |
+| `discharger_total_kwh` | `dischargerTotalKwh` | Double | kWh | totals | Ukupno ispražnjena energija (kWh dio) |
+| `error_message_1` | `inverterErrorCode1` | Integer | — | errors | Kod inverter greške (1) |
+| `error_message_2` | `inverterErrorCode2` | Integer | — | errors | Kod inverter greške (2) |
+| `warning_message_1` | `inverterWarningCode1` | Integer | — | errors | Kod inverter upozorenja (1) |
+| `warning_message_2` | `inverterWarningCode2` | Integer | — | errors | Kod inverter upozorenja (2) |
+| `charger_error_message` | `chargerErrorCode` | Integer | — | errors | MPPT punjač — kod greške |
+| `charger_warning_message` | `chargerWarningCode` | Integer | — | errors | MPPT punjač — kod upozorenja |
+| `extra` | `extra` | Map / JSON objekt | — | — | Proizvoljna dodatna polja koja se spremaju i vraćaju kako-jesu |
+
+> Isti popis (bez `timestamp`/`extra`) dostupan je runtime preko `GET /api/solar/variables` s dvojezičnim labelama i jedinicama — frontend ga koristi za dinamičko iscrtavanje legendi umjesto hardkodiranja.
+>
+> **Napomena o releju:** `pvRelayState` je čista telemetrija koju uređaj javi; backend je ne interpretira ni ne invertira. Upravljanje relejima ide zasebnim command flowom (`/relay/*` niže).
 
 #### `GET /api/solar/relay/pending`
 ESP32 povlači listu čekajućih komandi za relee.
@@ -880,6 +941,7 @@ POST   /api/checkin/{recordId}/document-scan
 GET    /api/checkin/{recordId}/status
 POST   /api/checkin/{recordId}/manual
 POST   /api/checkin/{recordId}/confirm
+POST   /api/checkin/{recordId}/abandon
 GET    /api/invoices/verify
 GET    /files/**                        (osim checkin-documents/**)
 POST   /api/solar/ingest                (X-Device-Secret header, ne JWT)

@@ -591,6 +591,37 @@ export interface SolarReadingResponse {
   yieldToday: number | null;
   consumptionToday: number | null;
   controllerStatus: number | null;
+  // --- PV punjač (dodatna polja, §14 API-REFERENCE.md) ---
+  pvChargerRadiatorTemp: number | null;
+  pvRelayState: number | null;
+  pvChargerAccumulatedDay: number | null;
+  pvChargerAccumulatedHour: number | null;
+  pvChargerAccumulatedMinute: number | null;
+  pvChargerBatteryVoltage: number | null;
+  pvChargerWorkState: number | null;
+  // --- Inverter ---
+  inverterBusVoltage: number | null;
+  inverterOutputVoltage: number | null;
+  inverterCurrent: number | null;
+  inverterPower: number | null;
+  inverterSystemLoad: number | null;
+  inverterAcRadiatorTemp: number | null;
+  inverterTransformerTemp: number | null;
+  inverterDcRadiatorTemp: number | null;
+  inverterLoadPercent: number | null;
+  /** Bitmaska smjera toka energije — dekodirati preko decodeArrowFlag() */
+  inverterArrowFlag: number | null;
+  // --- Kumulativna energija ---
+  chargerTotalProducedEnergy: number | null;
+  dischargerTotalMwh: number | null;
+  dischargerTotalKwh: number | null;
+  // --- Greške/upozorenja (bitmaske — dekodirati preko decodeFaultBitmask()) ---
+  inverterErrorCode1: number | null;
+  inverterErrorCode2: number | null;
+  inverterWarningCode1: number | null;
+  inverterWarningCode2: number | null;
+  chargerErrorCode: number | null;
+  chargerWarningCode: number | null;
   extra: Record<string, unknown> | null;
 }
 

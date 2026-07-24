@@ -15,6 +15,8 @@ import {
   Cpu,
   Gauge,
   Clock,
+  CalendarDays,
+  Timer,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -29,12 +31,26 @@ import {
 import type { SolarChartRange } from "@/lib/api/types";
 import {
   FIELD_GROUPS,
+  FAULT_FIELDS,
+  FAULT_FIELD_META,
   resolveFieldMeta,
   CHART_RANGES,
   formatDateTime,
   timeAgo,
 } from "@/lib/solar-utils";
+import {
+  decodeFaultBitmask,
+  decodeArrowFlag,
+  INVERTER_ERRORS_1,
+  INVERTER_ERRORS_2,
+  INVERTER_WARNINGS_1,
+  INVERTER_WARNINGS_2,
+  CHARGER_ERRORS,
+  CHARGER_WARNINGS,
+} from "@/lib/solar-fault-codes";
 import { SolarStatCard } from "@/components/intranet/solar/SolarStatCard";
+import { SolarFaultCard } from "@/components/intranet/solar/SolarFaultCard";
+import { SolarArrowFlagCard } from "@/components/intranet/solar/SolarArrowFlagCard";
 import { SolarLineChart } from "@/components/intranet/solar/SolarLineChart";
 import { SolarAggregateCard } from "@/components/intranet/solar/SolarAggregateCard";
 import {
@@ -43,6 +59,16 @@ import {
   LoadingState,
   SkeletonList,
 } from "@/components/intranet/ui/DataStates";
+
+/** Koji kod-tablica ide uz koje polje grešaka/upozorenja. */
+const FAULT_CODES: Record<(typeof FAULT_FIELDS)[number], Record<number, string>> = {
+  inverterErrorCode1: INVERTER_ERRORS_1,
+  inverterErrorCode2: INVERTER_ERRORS_2,
+  inverterWarningCode1: INVERTER_WARNINGS_1,
+  inverterWarningCode2: INVERTER_WARNINGS_2,
+  chargerErrorCode: CHARGER_ERRORS,
+  chargerWarningCode: CHARGER_WARNINGS,
+};
 
 // ============================================================
 // /intranet/solar — pregled solarnog/baterijskog sustava.
@@ -71,6 +97,25 @@ const ICON_MAP: Partial<Record<string, LucideIcon>> = {
   yieldToday: TrendingUp,
   consumptionToday: TrendingDown,
   controllerStatus: Cpu,
+  pvChargerRadiatorTemp: Thermometer,
+  pvRelayState: Cpu,
+  pvChargerAccumulatedDay: CalendarDays,
+  pvChargerAccumulatedHour: Clock,
+  pvChargerAccumulatedMinute: Timer,
+  pvChargerBatteryVoltage: Battery,
+  pvChargerWorkState: Cpu,
+  inverterBusVoltage: Zap,
+  inverterOutputVoltage: Zap,
+  inverterCurrent: Zap,
+  inverterPower: Activity,
+  inverterSystemLoad: Activity,
+  inverterAcRadiatorTemp: Thermometer,
+  inverterTransformerTemp: Thermometer,
+  inverterDcRadiatorTemp: Thermometer,
+  inverterLoadPercent: Gauge,
+  chargerTotalProducedEnergy: TrendingUp,
+  dischargerTotalMwh: TrendingDown,
+  dischargerTotalKwh: TrendingDown,
 };
 
 type ReportTab = "WEEKLY" | "MONTHLY";
@@ -187,9 +232,37 @@ export default function SolarPage() {
                       />
                     );
                   })}
+                  {group.group === "inverter" && (
+                    <SolarArrowFlagCard
+                      label="Zastavica strelice invertera"
+                      description="Status smjera toka energije u inverteru (PV, baterija, opterećenje, gradska mreža) — dekodirano iz sirove bitmaske uređaja."
+                      segments={decodeArrowFlag(reading.inverterArrowFlag)}
+                    />
+                  )}
                 </div>
               </div>
             ))}
+
+            {/* Greške i upozorenja — bitmaske dekodirane u konkretne tekstove */}
+            <div>
+              <h3 className="mb-2 text-sm font-semibold text-foreground">
+                Greške i upozorenja
+              </h3>
+              <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+                {FAULT_FIELDS.map((key) => {
+                  const meta = FAULT_FIELD_META[key];
+                  return (
+                    <SolarFaultCard
+                      key={key}
+                      label={meta.label}
+                      description={meta.description}
+                      kind={meta.kind}
+                      active={decodeFaultBitmask(reading[key], FAULT_CODES[key])}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
       </AsyncBoundary>
