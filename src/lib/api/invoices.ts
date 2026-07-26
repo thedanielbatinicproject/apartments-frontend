@@ -15,6 +15,7 @@ import type {
   InvoiceDocumentType,
   InvoiceStatus,
   InvoiceVerificationResponse,
+  InvoiceCounterResponse,
 } from "@/lib/api/types";
 
 export interface InvoiceFilters {
@@ -145,6 +146,40 @@ export async function fetchInvoicePdf(
   invoiceId: number
 ): Promise<Response> {
   return api.getPdf(`/api/admin/invoices/${companyId}/${invoiceId}/pdf`);
+}
+
+/**
+ * GET /api/admin/invoices/{companyId}/counter
+ * Trenutno stanje brojčanog niza za firmu / tip dokumenta / godinu.
+ */
+export async function getInvoiceCounter(
+  companyId: number,
+  documentType: InvoiceDocumentType,
+  year?: number
+): Promise<InvoiceCounterResponse> {
+  return api.get<InvoiceCounterResponse>(
+    `/api/admin/invoices/${companyId}/counter`,
+    { params: { documentType, year } }
+  );
+}
+
+/**
+ * PUT /api/admin/invoices/{companyId}/counter
+ * Ručno postavlja od kojeg broja kreće sljedeći dokument (npr.
+ * preuzimanje niza iz starog sustava). `nextNumber` je uključiv —
+ * {"nextNumber": 25} znači da sljedeći izdani dokument dobiva 25/godina.
+ */
+export async function setInvoiceCounter(
+  companyId: number,
+  documentType: InvoiceDocumentType,
+  nextNumber: number,
+  year?: number
+): Promise<InvoiceCounterResponse> {
+  return api.put<InvoiceCounterResponse>(
+    `/api/admin/invoices/${companyId}/counter`,
+    { nextNumber },
+    { params: { documentType, year } }
+  );
 }
 
 /**

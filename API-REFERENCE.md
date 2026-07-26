@@ -395,7 +395,12 @@ OCR tok: gost fotografira dokument (osobnu, putovnicu ili vozačku). Backend rad
   - `front` (file, required) — slika prednje strane
   - `back` (file, optional) — slika stražnje strane (vozačka/osobna imaju stražnju stranu, putovnica ne mora)
 - Response `data`: `CheckinStatusResponse` (vidi ispod)
-- Logika statusa: ako je `confidence < 0.7` → status `FAILED` (gost mora ponovno fotografirati). Ako uspije ali je `unreliable` (npr. vozačka nema MRZ, ili MRZ ne prođe validaciju) ili `confidence < 0.96` → status `MANUAL_REVIEW` (gost mora potvrditi/dopuniti podatke kroz `/confirm`). Prag `0.96` znači "visoko pouzdano" ali gost SVEJEDNO uvijek prolazi kroz `/confirm` korak prije nego evidencija postane konačna.
+- **Logika statusa (nova):** OCR čita MRZ zonu s **obje** strane (na HR osobnoj je MRZ na poleđini, na putovnici na glavnoj stranici). Uspjeh se NE mjeri whole-image confidenceom (na fotografijama dokumenata je prirodno nizak) nego time je li nešto izvučeno:
+  - MRZ dokument (osobna/putovnica) i MRZ dao ime **ili** broj dokumenta → `MANUAL_REVIEW` (podaci prefilani, gost potvrđuje kroz `/confirm`).
+  - MRZ dokument, a MRZ se nije pročitao ni s jedne strane → `FAILED` (gost ponovno fotografira poleđinu ili ide na ručni unos).
+  - Vozačka (nema MRZ) → uvijek `MANUAL_REVIEW`, polja se unose ručno.
+  - `needsManualReview=true` kad je izvlačenje nepouzdano (MRZ check-znamenke ne prođu, ili vozačka).
+  - Za pouzdano čitanje MRZ-a treba **`mrz.traineddata`** model (vidi `docs/OCR-MRZ-SETUP.md`); bez njega backend pada na `eng` uz osjetno slabiju točnost, ali ne puca.
 
 ### `GET /api/checkin/{recordId}/status`
 Polling — provjera trenutnog statusa obrade (frontend može pollati dok je `PROCESSING`).
@@ -702,11 +707,41 @@ Konvertira dokument u drugi tip (npr. ponuda → predračun → račun) — krei
 - Query: `to` (`INVOICE`|`PROFORMA`|`QUOTE`, required)
 - Response `data`: `InvoiceResponse` (novi dokument)
 
+#### `GET /api/admin/invoices/{companyId}/counter`
+Trenutno stanje brojčanog niza za firmu / tip dokumenta / godinu.
+
+- Path: `companyId` (Long)
+- Query: `documentType` (`INVOICE`|`PROFORMA`|`QUOTE`, **required**), `year` (Integer, optional — default tekuća godina)
+- Response `data` (`InvoiceCounterResponse`): `{ companyId, documentType, year, lastNumber, nextNumber }`
+  - `lastNumber` = zadnji **dodijeljen** broj (`0` = još nijedan dokument nije izdan)
+  - `nextNumber` = broj koji dobiva sljedeći izdani dokument
+
+#### `PUT /api/admin/invoices/{companyId}/counter`
+Ručno postavlja od kojeg broja kreće sljedeći dokument (npr. preuzimanje niza iz starog sustava ili ispravak nakon greške).
+
+- Path: `companyId` (Long)
+- Query: `documentType` (required), `year` (optional — default tekuća godina)
+- Body (`SetInvoiceCounterRequest`): `{ "nextNumber": Integer (required, min 1) }`
+- Response `data`: `InvoiceCounterResponse` (novo stanje)
+- `400` ako je `nextNumber < 1`
+
+`nextNumber` je **uključiv**: `{"nextNumber": 25}` znači da sljedeći izdani dokument dobiva `25/2026`, pa dalje `26`, `27`… Interno se sprema `nextNumber - 1`, jer se pri izdavanju uvijek dodjeljuje "zadnji + 1".
+
+> Brojač je zaseban po **firmi + tipu dokumenta + godini** — postavljanje za `INVOICE` ne dira `PROFORMA` ni druge godine. Postavljanje na broj koji je već iskorišten dovodi do duplikata u nizu; backend to ne sprječava jer je ručni zahvat namijenjen upravo ispravcima.
+
 #### `GET /api/admin/invoices/{companyId}/{invoiceId}/pdf`
 Generira i vraća PDF dokumenta.
 
 - Path: `companyId`, `invoiceId` (Long)
 - Response: **binarni PDF** (`Content-Type: application/pdf`, `Content-Disposition: inline; filename="..."`) — NE ide kroz `ApiResponse` omotač. Frontend ovo otvara direktno (npr. u novom tabu ili `<iframe>`), treba proslijediti `Authorization` header jer ruta zahtijeva JWT.
+
+**Izgled i tehničke karakteristike PDF-a:**
+
+- **Uvijek jedna stranica** (uže margine i zbijeniji razmaci nego prije).
+- **Ugrađeni fontovi** (Caladea serif za naslove/iznose, Lato sans za tekst), `IDENTITY_H` + `EMBEDDED`. Time su hrvatski dijakritici (`č ć ž š đ`) i `€` zajamčeni u svakom čitaču i pri ispisu — prije se koristio neugrađeni Helvetica s `Cp1250`, pa su na nekim uređajima nestajali (najčešće `đ`).
+- **Prilagođeno crno-bijelom ispisu**: ukrasi su fine dijagonalne linije u polju iznosa i vrlo svijetli vodeni žig (~4,5% opacity) umjesto punih ispuna — malo tonera.
+- **Logotip** iznajmljivača iznad naziva objekta, ako je postavljen (`Company.logoPath`). Ako datoteka nedostaje, dokument se svejedno izdaje.
+- **Bogati metapodaci**: `Title`, `Author`, `Subject`, `Creator`, `CreationDate` i `Keywords` s brojem dokumenta, godinom, UID-om, datumom, primateljem i OIB-ovima, jedinicom, datumima boravka, iznosom, načinom plaćanja i statusom — dokument se može naći pretragom bez otvaranja.
 
 ### PUBLIC ruta
 

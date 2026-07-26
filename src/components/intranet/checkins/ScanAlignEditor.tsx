@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { describeError } from "@/lib/api/error-utils";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
+import { debugSaveScan } from "@/lib/debug-save-scan";
 
 // ============================================================
 // Poravnavanje skeniranog obrasca prije slanja.
@@ -301,7 +302,10 @@ export function ScanAlignEditor({
         canvas.toBlob(resolve, "image/jpeg", 0.92)
       );
 
-      if (blob) await onConfirm(blob);
+      if (blob) {
+        debugSaveScan(blob, "admin-form-scan-align");
+        await onConfirm(blob);
+      }
     } finally {
       setIsExporting(false);
     }

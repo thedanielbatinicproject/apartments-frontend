@@ -423,6 +423,17 @@ export interface InvoiceResponse {
   editable: boolean;
 }
 
+/** GET/PUT /api/admin/invoices/{companyId}/counter */
+export interface InvoiceCounterResponse {
+  companyId: number;
+  documentType: InvoiceDocumentType;
+  year: number;
+  /** Zadnji dodijeljen broj — 0 = još nijedan dokument nije izdan */
+  lastNumber: number;
+  /** Broj koji dobiva sljedeći izdani dokument */
+  nextNumber: number;
+}
+
 // ============================================================
 // EVIDENCIJA GOSTIJU — §9
 //

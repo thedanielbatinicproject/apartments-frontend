@@ -5,6 +5,7 @@ import { X, Check, Loader2, Sun, Zap, ZapOff, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { describeError } from "@/lib/api/error-utils";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
+import { debugSaveScan } from "@/lib/debug-save-scan";
 
 // ============================================================
 // Fullscreen kamera za skeniranje papirnatog obrasca.
@@ -323,7 +324,10 @@ export function PaperScanCamera({
 
   const confirm = useCallback(async () => {
     const blob = capturedBlobRef.current;
-    if (blob) await onCapture(blob);
+    if (blob) {
+      debugSaveScan(blob, "admin-form-scan-camera");
+      await onCapture(blob);
+    }
   }, [onCapture]);
 
   if (!open) return null;

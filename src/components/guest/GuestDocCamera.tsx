@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Check, Loader2, Camera, RotateCcw, PenLine, Maximize2, ZoomIn } from "lucide-react";
 import type { GuestDocumentType } from "@/lib/api/types";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
+import { debugSaveScan } from "@/lib/debug-save-scan";
 
 // ============================================================
 // Kamera za identifikacijske dokumente (gost, self-checkin).
@@ -331,11 +332,14 @@ export function GuestDocCamera({
       const blob = await new Promise<Blob | null>((resolve) =>
         canvas.toBlob(resolve, "image/jpeg", 0.9)
       );
-      if (blob) await onCapture(blob);
+      if (blob) {
+        debugSaveScan(blob, `checkin-${documentType.toLowerCase()}-${side}`);
+        await onCapture(blob);
+      }
     } finally {
       setIsExporting(false);
     }
-  }, [naturalSize, frameSize, tx, ty, scale, ratio, onCapture]);
+  }, [naturalSize, frameSize, tx, ty, scale, ratio, onCapture, documentType, side]);
 
   if (!open) return null;
 

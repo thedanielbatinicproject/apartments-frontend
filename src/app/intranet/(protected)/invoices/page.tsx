@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Plus, FileText, RefreshCw, Building, X } from "lucide-react";
+import { Plus, FileText, RefreshCw, Building, X, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAsync } from "@/hooks/use-async";
 import { useCompany } from "@/lib/company/company-context";
@@ -27,6 +27,7 @@ import {
   SkeletonList,
 } from "@/components/intranet/ui/DataStates";
 import { CatalogsSection } from "@/components/intranet/invoices/CatalogsSection";
+import { SetInvoiceCounterModal } from "@/components/intranet/invoices/SetInvoiceCounterModal";
 
 // ============================================================
 // /intranet/invoices — lista dokumenata odabrane firme.
@@ -43,6 +44,7 @@ export default function InvoicesPage() {
   const [documentType, setDocumentType] = useState<InvoiceDocumentType | "">("");
   const [status, setStatus] = useState<InvoiceStatus | "">("");
   const [year, setYear] = useState<number | "">("");
+  const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
 
   const filters: InvoiceFilters = useMemo(
     () => ({
@@ -125,6 +127,15 @@ export default function InvoicesPage() {
             <RefreshCw
               className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
             />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCounterModalOpen(true)}
+            className="inline-flex min-h-[2.5rem] items-center gap-1.5 rounded-xl border border-border bg-card px-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted active:scale-[0.98]"
+          >
+            <Hash className="h-4 w-4" />
+            Postavi brojeve računa
           </button>
 
           <Link
@@ -295,6 +306,12 @@ export default function InvoicesPage() {
 
       {/* Katalozi */}
       <CatalogsSection companyId={selectedCompanyId} />
+
+      <SetInvoiceCounterModal
+        open={isCounterModalOpen}
+        onClose={() => setIsCounterModalOpen(false)}
+        companyId={selectedCompanyId}
+      />
     </div>
   );
 }
