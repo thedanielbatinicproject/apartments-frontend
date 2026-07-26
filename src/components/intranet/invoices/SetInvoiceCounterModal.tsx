@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { X, Hash, Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Portal } from "@/components/ui/portal";
 import { useAsync, useMutation } from "@/hooks/use-async";
 import { getInvoiceCounter, setInvoiceCounter } from "@/lib/api/invoices";
-import type { InvoiceDocumentType } from "@/lib/api/types";
+import type { InvoiceCounterResponse, InvoiceDocumentType } from "@/lib/api/types";
 import { DOCUMENT_TYPES, recentYears } from "@/lib/invoice-utils";
 import { describeError } from "@/lib/api/error-utils";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
@@ -41,7 +41,8 @@ export function SetInvoiceCounterModal({
   const [documentType, setDocumentType] = useState<InvoiceDocumentType>("INVOICE");
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [nextNumberInput, setNextNumberInput] = useState("");
-  const [saved, setSaved] = useState(false);
+  const [syncedCounter, setSyncedCounter] = useState<InvoiceCounterResponse | null>(null);
+  const [savedResult, setSavedResult] = useState<InvoiceCounterResponse | null>(null);
 
   const counter = useAsync(
     () => getInvoiceCounter(companyId, documentType, year),
@@ -49,25 +50,30 @@ export function SetInvoiceCounterModal({
     { enabled: open }
   );
 
-  // Svježe stanje postaje predložena vrijednost inputa; promjena tipa/
-  // godine ili ponovno otvaranje makne prikaz "spremljeno".
-  useEffect(() => {
-    if (counter.data) setNextNumberInput(String(counter.data.nextNumber));
-  }, [counter.data]);
-
-  useEffect(() => {
-    setSaved(false);
-  }, [open, documentType, year]);
+  // Svježe stanje (nova GET) postaje predložena vrijednost inputa — usklađeno
+  // TIJEKOM rendera (React-ov preporučeni obrazac za "prilagodi state kad se
+  // promijene ulazni podaci"), umjesto setState() unutar useEffect-a.
+  if (counter.data && counter.data !== syncedCounter) {
+    setSyncedCounter(counter.data);
+    setNextNumberInput(String(counter.data.nextNumber));
+  }
 
   const mutation = useMutation(
     (value: number) => setInvoiceCounter(companyId, documentType, value, year),
     {
       onSuccess: (result) => {
         counter.setData(result);
-        setSaved(true);
+        setSavedResult(result);
       },
     }
   );
+
+  // "Spremljeno" je izvedeno stanje, ne zaseban useEffect reset — vrijedi
+  // dok god je odabrani tip/godina isti kao ono što je zadnje spremljeno.
+  const saved =
+    savedResult != null &&
+    savedResult.documentType === documentType &&
+    savedResult.year === year;
 
   if (!open) return null;
 
@@ -212,11 +218,11 @@ export function SetInvoiceCounterModal({
                 />
               </label>
 
-              {mutation.error && (
+              {mutation.error ? (
                 <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-xs text-destructive">
                   {describeError(mutation.error).message}
                 </div>
-              )}
+              ) : null}
 
               {saved && !mutation.error && (
                 <div className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
